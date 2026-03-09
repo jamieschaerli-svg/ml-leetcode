@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-card: #1a1a2e;
+  --accent: #6c63ff;
+  --accent-hover: #5a52d5;
+  --success: #00c853;
+  --warning: #ffab00;
+  --error: #ff5252;
+  --text-primary: #e8e8e8;
+  --text-secondary: #a0a0b0;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.btn-primary {
+  @apply px-6 py-3 rounded-lg font-semibold transition-all duration-200;
+  background: var(--accent);
+  color: white;
+}
+.btn-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid rgba(108, 99, 255, 0.15);
+  @apply rounded-xl p-6;
+}
+
+.card:hover {
+  border-color: rgba(108, 99, 255, 0.4);
+}
