@@ -1,7 +1,7 @@
 # PRD Addendum — Adaptive Learning & Unlimited Practice
 
 ## 1. Core Learning Philosophy
-Unlike LeetCode, the system should behave more like a personal ML/data tutor.
+Unlike CodePro, the system should behave more like a personal ML/data tutor.
 
 Key principles:
 - Unlimited daily practice
@@ -120,7 +120,7 @@ User sees:
 
 **Challenge Mode**
 User sees:
-- Just the problem (Like LeetCode style)
+- Just the problem (Like CodePro style)
 
 ## 9. AI Explanation Feature
 After solving a problem, user can click: "Explain my code"

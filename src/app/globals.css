@@ -12,70 +12,113 @@
 }
 
 :root {
-  --bg-primary: #000000;
-  --bg-secondary: #0a0a0a;
-  --bg-card: rgba(255, 255, 255, 0.03);
-  --border-subtle: rgba(255, 255, 255, 0.1);
+  --bg-primary: #030305;
+  --bg-secondary: #0a0a0f;
+  --bg-card: rgba(255, 255, 255, 0.02);
+  --border-subtle: rgba(255, 255, 255, 0.08);
   --accent: #ffffff;
   --success: #10b981;
   --warning: #f59e0b;
   --error: #ef4444;
-  --text-primary: #ffffff;
-  --text-secondary: #a1a1aa;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
 }
 
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
+  background-image: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
 }
 
 @layer utilities {
   .text-gradient {
-    background: linear-gradient(to right, #ffffff, #a1a1aa);
+    background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
+
   .bg-glow {
     position: absolute;
-    top: 0;
+    top: -20%;
     left: 50%;
-    transform: translate(-50%, -10%);
-    width: 800px;
-    height: 800px;
-    background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 60%);
+    transform: translateX(-50%);
+    width: 60vw;
+    height: 60vw;
+    max-width: 800px;
+    max-height: 800px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.1) 30%, transparent 70%);
+    filter: blur(60px);
     z-index: -1;
     pointer-events: none;
+    animation: pulseGlow 8s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    opacity: 0.7;
+    transform: translateX(-50%) scale(0.95);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.05);
   }
 }
 
 .btn-primary {
   @apply px-6 py-2.5 rounded-full font-medium transition-all duration-300 text-sm;
-  background: white;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(240, 240, 240, 1) 100%);
   color: black;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
+
 .btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(255, 255, 255, 0.25);
 }
 
 .btn-secondary {
   @apply px-6 py-2.5 rounded-full font-medium transition-all duration-300 text-sm;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
   color: white;
   border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(10px);
 }
+
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .card {
-  background: var(--bg-card);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
   border: 1px solid var(--border-subtle);
-  backdrop-filter: blur(12px);
-  @apply rounded-2xl p-6 transition-all duration-300;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  @apply rounded-2xl p-6 transition-all duration-300 relative overflow-hidden;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
 }
 
 .card:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.card:hover::before {
+  opacity: 1;
 }

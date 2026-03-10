@@ -24,16 +24,18 @@ export default function Home() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
+      {/* Animated Subtle Grid Background */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none z-0"></div>
       <div className="bg-glow"></div>
 
       {/* Header */}
-      <header className="border-b border-white/[0.08] px-6 py-4 fixed top-0 w-full z-50 bg-black/50 backdrop-blur-md">
+      <header className="border-b border-white/[0.05] px-6 py-4 fixed top-0 w-full z-50 bg-[#030305]/60 backdrop-blur-xl">
         <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <Link href="/" className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+          <Link href="/" className="text-xl font-bold tracking-tight text-white flex items-center gap-2 relative z-10 transition-transform hover:scale-105">
             <Logo size={28} />
-            <span><span style={{ color: "var(--accent)" }}>Code</span>Pro</span>
+            <span><span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Code</span>Pro</span>
           </Link>
-          <nav className="flex gap-6 items-center">
+          <nav className="flex gap-6 items-center relative z-10">
             <Link href="#problems" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
               Problems
             </Link>
@@ -45,19 +47,19 @@ export default function Home() {
       </header>
 
       {/* Hero */}
-      <section className="px-6 pt-40 pb-24 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 mb-8 text-xs font-medium text-zinc-300">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+      <section className="relative z-10 px-6 pt-44 pb-24 text-center">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 mb-8 text-xs font-medium text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.15)] backdrop-blur-md transition-all hover:bg-emerald-500/20 cursor-default">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
           New: AI-Powered Explanations
         </div>
-        <h2 className="mb-6 text-5xl md:text-7xl font-bold tracking-tight text-gradient max-w-4xl mx-auto leading-tight">
+        <h2 className="mb-6 text-5xl md:text-7xl lg:text-[5rem] font-bold tracking-tight text-gradient max-w-5xl mx-auto leading-[1.1]">
           Master Python Data Science
         </h2>
-        <p className="mx-auto mb-10 max-w-2xl text-lg text-zinc-400 leading-relaxed">
+        <p className="mx-auto mb-10 max-w-2xl text-lg md:text-xl text-zinc-400 leading-relaxed font-light">
           The cleanest way to learn. Unlimited practice, adaptive difficulty, and real-world explanations to level up your skills.
         </p>
-        <div className="flex items-center justify-center gap-4">
-          <Link href="#problems" className="btn-primary">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link href="#problems" className="btn-primary flex items-center gap-2">
             Start Coding
           </Link>
           <Link href="#features" className="btn-secondary">
