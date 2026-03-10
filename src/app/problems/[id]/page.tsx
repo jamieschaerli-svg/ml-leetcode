@@ -113,7 +113,12 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
       }
 
       if (data.error) {
-        setOutput(data.error);
+        // Clean up Forbidden messages
+        if (data.error.startsWith("Forbidden:")) {
+          setOutput(data.error.replace("Forbidden: ", "") + "\nThis import is restricted for security. Try a different approach.");
+        } else {
+          setOutput(data.error);
+        }
         setIsCorrect(false);
         recordAttempt(problem!.id, false);
         return;
@@ -278,7 +283,7 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
           </div>
 
           {/* Output */}
-          {output && (
+          {(output || isCorrect !== null) && (
             <div
               className={`rounded-xl border p-4 font-mono text-sm bg-black/50 ${
                 isCorrect === true
@@ -291,9 +296,48 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
               <div className={`mb-2 text-xs font-semibold uppercase tracking-wider ${
                 isCorrect === true ? "text-emerald-400" : isCorrect === false ? "text-red-400" : "text-zinc-500"
               }`}>
-                {isCorrect === true ? "Correct!" : isCorrect === false ? "Not quite..." : "Output"}
+                {isCorrect === true ? "Correct!" : isCorrect === false ? "Not quite — try again!" : "Output"}
               </div>
-              <pre className="whitespace-pre-wrap">{output}</pre>
+
+              {/* Show friendly error for Python exceptions */}
+              {isCorrect === false && output && (output.includes("Traceback") || output.includes("Error")) && !output.includes("\n") ? (
+                <div className="space-y-3">
+                  <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3">
+                    <div className="text-xs font-semibold text-red-400 mb-1">Error</div>
+                    <pre className="whitespace-pre-wrap text-red-300/80">{output}</pre>
+                  </div>
+                </div>
+              ) : isCorrect === false && output && (output.includes("Traceback") || output.includes("SyntaxError") || output.includes("NameError") || output.includes("TypeError") || output.includes("IndentationError") || output.includes("AttributeError") || output.includes("ImportError") || output.includes("ValueError") || output.includes("IndexError") || output.includes("KeyError") || output.includes("ZeroDivisionError")) ? (
+                <div className="space-y-3">
+                  <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3">
+                    <div className="text-xs font-semibold text-red-400 mb-1">Python Error</div>
+                    <pre className="whitespace-pre-wrap text-red-300/80 text-xs">{
+                      (() => {
+                        const lines = output.trim().split("\n");
+                        const errorLine = lines.findLast((l: string) => /Error/.test(l));
+                        return errorLine || lines[lines.length - 1];
+                      })()
+                    }</pre>
+                  </div>
+                  <details className="text-xs text-zinc-500">
+                    <summary className="cursor-pointer hover:text-zinc-300 transition-colors">Show full traceback</summary>
+                    <pre className="mt-2 whitespace-pre-wrap text-zinc-600">{output}</pre>
+                  </details>
+                </div>
+              ) : isCorrect === false ? (
+                <div className="space-y-3">
+                  <div>
+                    <div className="text-xs text-zinc-500 mb-1">Your output:</div>
+                    <pre className="whitespace-pre-wrap text-red-300/80">{output || "(no output)"}</pre>
+                  </div>
+                  <div>
+                    <div className="text-xs text-zinc-500 mb-1">Expected:</div>
+                    <pre className="whitespace-pre-wrap text-emerald-300/80">{problem.testCases[0].expected}</pre>
+                  </div>
+                </div>
+              ) : (
+                <pre className="whitespace-pre-wrap">{output}</pre>
+              )}
             </div>
           )}
 
