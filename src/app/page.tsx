@@ -1,12 +1,26 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { problems } from "@/data/problems";
+import Logo from "@/components/Logo";
+import { getRecommendations, getSkillSummary, type Recommendation } from "@/lib/adaptive";
 
 export default function Home() {
   const easy = problems.filter((p) => p.difficulty === "easy");
   const medium = problems.filter((p) => p.difficulty === "medium");
   const hard = problems.filter((p) => p.difficulty === "hard");
+
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+  const [skill, setSkill] = useState<{ level: number; solved: number; total: number; streak: number } | null>(null);
+
+  useEffect(() => {
+    const summary = getSkillSummary();
+    setSkill(summary);
+    if (summary.solved > 0) {
+      setRecommendations(getRecommendations(3));
+    }
+  }, []);
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -16,10 +30,8 @@ export default function Home() {
       <header className="border-b border-white/[0.08] px-6 py-4 fixed top-0 w-full z-50 bg-black/50 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between">
           <Link href="/" className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-white flex items-center justify-center">
-              <div className="w-3 h-3 bg-black rounded-sm"></div>
-            </div>
-            CodePro
+            <Logo size={28} />
+            <span><span style={{ color: "var(--accent)" }}>Code</span>Pro</span>
           </Link>
           <nav className="flex gap-6 items-center">
             <Link href="#problems" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
@@ -89,6 +101,86 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Adaptive Skill & Recommendations */}
+      {skill && skill.solved > 0 && (
+        <section className="mx-auto max-w-4xl px-6 pt-16">
+          {/* Skill bar */}
+          <div className="card mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-semibold text-white">Your Progress</h3>
+                <p className="text-sm text-zinc-400">Difficulty adapts as you learn</p>
+              </div>
+              <div className="flex items-center gap-4 text-sm">
+                <div className="text-center">
+                  <div className="text-xl font-bold" style={{ color: "var(--accent)" }}>{skill.level}</div>
+                  <div className="text-zinc-500 text-xs">Skill Level</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-emerald-400">{skill.solved}/{skill.total}</div>
+                  <div className="text-zinc-500 text-xs">Solved</div>
+                </div>
+                {skill.streak > 0 && (
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-amber-400">{skill.streak}</div>
+                    <div className="text-zinc-500 text-xs">Day Streak</div>
+                  </div>
+                )}
+              </div>
+            </div>
+            {/* Skill level bar */}
+            <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{
+                  width: `${(skill.level / 30) * 100}%`,
+                  background: "linear-gradient(90deg, var(--accent), #8b83ff)",
+                }}
+              />
+            </div>
+            <div className="flex justify-between mt-1 text-xs text-zinc-600">
+              <span>Beginner</span>
+              <span>Intermediate</span>
+              <span>Advanced</span>
+            </div>
+          </div>
+
+          {/* Recommendations */}
+          {recommendations.length > 0 && (
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-white mb-4">Recommended For You</h3>
+              <div className="grid gap-2">
+                {recommendations.map((rec) => (
+                  <Link key={rec.problem.id} href={`/problems/${rec.problem.id}`}>
+                    <div className="group flex cursor-pointer items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] p-4 transition-all duration-300 hover:border-white/20">
+                      <div>
+                        <div className="font-medium text-zinc-300 group-hover:text-white transition-colors">
+                          {rec.problem.title}
+                        </div>
+                        <div className="text-xs text-zinc-500 mt-0.5">{rec.reason}</div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span
+                          className="text-xs font-medium px-2.5 py-1 rounded-md border"
+                          style={{
+                            color: rec.problem.difficulty === "easy" ? "#10b981" : rec.problem.difficulty === "medium" ? "#f59e0b" : "#ef4444",
+                            borderColor: rec.problem.difficulty === "easy" ? "#10b98130" : rec.problem.difficulty === "medium" ? "#f59e0b30" : "#ef444430",
+                            backgroundColor: rec.problem.difficulty === "easy" ? "#10b98110" : rec.problem.difficulty === "medium" ? "#f59e0b10" : "#ef444410",
+                          }}
+                        >
+                          Lvl {rec.problem.level}
+                        </span>
+                        <span className="text-zinc-600 group-hover:text-white transition-colors group-hover:translate-x-1 duration-300">→</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Problems List */}
       <section id="problems" className="relative mx-auto max-w-4xl px-6 pb-32 pt-16">

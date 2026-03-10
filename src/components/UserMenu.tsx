@@ -21,7 +21,7 @@ export default function UserMenu() {
 
   return (
     <div className="flex items-center gap-3">
-      <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+      <span className="text-sm text-zinc-400">
         {user.email}
       </span>
       <button

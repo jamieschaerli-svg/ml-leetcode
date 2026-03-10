@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, use } from "react";
+import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { problems } from "@/data/problems";
 import Header from "@/components/Header";
 import CodeEditor from "@/components/CodeEditor";
 import HintSystem from "@/components/HintSystem";
 import FeedbackButtons from "@/components/FeedbackButtons";
+import { recordAttempt, getRecommendations, getSkillSummary } from "@/lib/adaptive";
 
 export default function ProblemPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -16,6 +17,13 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
   const [code, setCode] = useState(problem?.starterCode || "");
   const [showSolution, setShowSolution] = useState(false);
   const [mode, setMode] = useState<"learning" | "challenge">("learning");
+  const [nextRec, setNextRec] = useState<{ id: number; title: string } | null>(null);
+  const [skillLevel, setSkillLevel] = useState<number | null>(null);
+
+  useEffect(() => {
+    const summary = getSkillSummary();
+    setSkillLevel(summary.level);
+  }, []);
 
   if (!problem) {
     return (
@@ -30,8 +38,6 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
     );
   }
 
-  const nextProblem = problems.find((p) => p.level > problem.level);
-
   async function runCode() {
     try {
       const res = await fetch("/api/execute", {
@@ -44,6 +50,7 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
       if (data.error) {
         setOutput(data.error);
         setIsCorrect(false);
+        recordAttempt(problem!.id, false);
         return;
       }
 
@@ -51,16 +58,43 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
 
       const expected = problem!.testCases[0].expected.trim();
       const actual = (data.output || "").trim();
-      setIsCorrect(actual === expected);
+      const correct = actual === expected;
+      setIsCorrect(correct);
+
+      const updatedSkill = recordAttempt(problem!.id, correct);
+      setSkillLevel(Math.round(updatedSkill.level));
+
+      if (correct) {
+        const recs = getRecommendations(1);
+        if (recs.length > 0) {
+          setNextRec({ id: recs[0].problem.id, title: recs[0].problem.title });
+        }
+      }
     } catch {
       setOutput("Error connecting to server");
       setIsCorrect(false);
     }
   }
 
+  function handleFeedback(newLevel: number) {
+    setSkillLevel(newLevel);
+    const recs = getRecommendations(1);
+    if (recs.length > 0) {
+      setNextRec({ id: recs[0].problem.id, title: recs[0].problem.title });
+    }
+  }
+
   return (
     <div className="min-h-screen">
       <Header>
+        {skillLevel !== null && (
+          <span
+            className="rounded-full px-3 py-1 text-xs font-semibold"
+            style={{ background: "var(--accent)" + "22", color: "var(--accent)" }}
+          >
+            Skill Lvl {skillLevel}
+          </span>
+        )}
         <div className="flex items-center rounded-full border border-white/10 bg-white/5 p-0.5">
           <button
             onClick={() => setMode("learning")}
@@ -200,21 +234,30 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
           {/* Feedback & next */}
           {isCorrect && (
             <div className="space-y-4">
-              <FeedbackButtons problemId={problem.id} />
-              {nextProblem && (
-                <Link
-                  href={`/problems/${nextProblem.id}`}
-                  className="btn-primary block text-center"
-                  onClick={() => {
-                    setCode(nextProblem.starterCode);
-                    setOutput("");
-                    setIsCorrect(null);
-                    setShowSolution(false);
-                  }}
-                >
-                  Next Problem: {nextProblem.title} →
-                </Link>
-              )}
+              <FeedbackButtons problemId={problem.id} onFeedback={handleFeedback} />
+              {(nextRec || problems.find((p) => p.level > problem.level)) && (() => {
+                const fallback = problems.find((p) => p.level > problem.level);
+                const next = nextRec || (fallback ? { id: fallback.id, title: fallback.title } : null);
+                if (!next) return null;
+                return (
+                  <Link
+                    href={`/problems/${next.id}`}
+                    className="btn-primary block text-center"
+                    onClick={() => {
+                      const np = problems.find((p) => p.id === next.id);
+                      if (np) {
+                        setCode(np.starterCode);
+                        setOutput("");
+                        setIsCorrect(null);
+                        setShowSolution(false);
+                        setNextRec(null);
+                      }
+                    }}
+                  >
+                    Next Problem: {next.title} →
+                  </Link>
+                );
+              })()}
             </div>
           )}
         </div>

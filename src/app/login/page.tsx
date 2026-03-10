@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
+import Logo from '@/components/Logo';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -20,30 +22,41 @@ export default function LoginPage() {
     setSuccess(null);
     setLoading(true);
 
-    const result = isSignUp
-      ? await signUp(email, password)
-      : await signIn(email, password);
+    try {
+      if (isSignUp) {
+        const result = await signUp(email, password);
+        if (result.error) {
+          setError(result.error);
+        } else {
+          setSuccess('Account created! Check your email to confirm, then sign in.');
+          setIsSignUp(false);
+        }
+      } else {
+        const result = await signIn(email, password);
+        if (result.error) {
+          setError(result.error);
+        } else {
+          router.refresh();
+          router.push('/');
+          return; // don't setLoading(false) — we're navigating away
+        }
+      }
+    } catch {
+      setError('Something went wrong. Please try again.');
+    }
 
     setLoading(false);
-
-    if (result.error) {
-      setError(result.error);
-    } else if (isSignUp) {
-      setSuccess('Account created! Check your email to confirm, then sign in.');
-      setIsSignUp(false);
-    } else {
-      router.push('/');
-    }
   }
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold">
-            <span style={{ color: 'var(--accent)' }}>Code</span>Pro
-          </h1>
-          <p className="mt-2" style={{ color: 'var(--text-secondary)' }}>
+          <Link href="/" className="inline-flex items-center gap-2.5">
+            <Logo size={40} />
+            <h1 className="text-3xl font-bold text-white">CodePro</h1>
+          </Link>
+          <p className="mt-3 text-zinc-400">
             {isSignUp ? 'Create your account' : 'Sign in to continue learning'}
           </p>
         </div>
@@ -51,11 +64,7 @@ export default function LoginPage() {
         <div className="card">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label
-                htmlFor="email"
-                className="mb-1 block text-sm font-medium"
-                style={{ color: 'var(--text-secondary)' }}
-              >
+              <label htmlFor="email" className="mb-1 block text-sm font-medium text-zinc-400">
                 Email
               </label>
               <input
@@ -64,17 +73,13 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition-colors focus:border-[var(--accent)]"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-white/30"
                 placeholder="you@example.com"
               />
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="mb-1 block text-sm font-medium"
-                style={{ color: 'var(--text-secondary)' }}
-              >
+              <label htmlFor="password" className="mb-1 block text-sm font-medium text-zinc-400">
                 Password
               </label>
               <input
@@ -84,33 +89,19 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition-colors focus:border-[var(--accent)]"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-white/30"
                 placeholder="Min. 6 characters"
               />
             </div>
 
             {error && (
-              <div
-                className="rounded-lg border px-4 py-3 text-sm"
-                style={{
-                  background: 'var(--error)' + '11',
-                  borderColor: 'var(--error)' + '44',
-                  color: 'var(--error)',
-                }}
-              >
+              <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
                 {error}
               </div>
             )}
 
             {success && (
-              <div
-                className="rounded-lg border px-4 py-3 text-sm"
-                style={{
-                  background: 'var(--success)' + '11',
-                  borderColor: 'var(--success)' + '44',
-                  color: 'var(--success)',
-                }}
-              >
+              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-400">
                 {success}
               </div>
             )}
@@ -131,8 +122,7 @@ export default function LoginPage() {
                 setError(null);
                 setSuccess(null);
               }}
-              className="text-sm transition-colors hover:underline"
-              style={{ color: 'var(--accent)' }}
+              className="text-sm text-zinc-400 transition-colors hover:text-white hover:underline"
             >
               {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
             </button>
