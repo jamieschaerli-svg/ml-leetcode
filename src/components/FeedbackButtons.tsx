@@ -1,20 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import { recordFeedback } from "@/lib/adaptive";
 
 interface FeedbackButtonsProps {
   problemId: number;
+  onFeedback?: (level: number) => void;
 }
 
-export default function FeedbackButtons({ problemId }: FeedbackButtonsProps) {
+export default function FeedbackButtons({ problemId, onFeedback }: FeedbackButtonsProps) {
   const [selected, setSelected] = useState<string | null>(null);
 
-  function handleFeedback(rating: string) {
+  function handleFeedback(rating: "too_easy" | "good" | "too_hard") {
     setSelected(rating);
-    // Store locally for now; Supabase integration later
-    const existing = JSON.parse(localStorage.getItem("feedback") || "{}");
-    existing[problemId] = rating;
-    localStorage.setItem("feedback", JSON.stringify(existing));
+    const updatedSkill = recordFeedback(problemId, rating);
+    onFeedback?.(Math.round(updatedSkill.level));
   }
 
   return (
@@ -24,9 +24,9 @@ export default function FeedbackButtons({ problemId }: FeedbackButtonsProps) {
       </h3>
       <div className="flex gap-2">
         {[
-          { label: "Too Easy", value: "too_easy", color: "var(--success)" },
-          { label: "Good", value: "good", color: "var(--accent)" },
-          { label: "Too Hard", value: "too_hard", color: "var(--error)" },
+          { label: "Too Easy", value: "too_easy" as const, color: "var(--success)" },
+          { label: "Good", value: "good" as const, color: "var(--accent)" },
+          { label: "Too Hard", value: "too_hard" as const, color: "var(--error)" },
         ].map((opt) => (
           <button
             key={opt.value}
@@ -42,6 +42,11 @@ export default function FeedbackButtons({ problemId }: FeedbackButtonsProps) {
           </button>
         ))}
       </div>
+      {selected && (
+        <p className="mt-2 text-xs" style={{ color: "var(--text-secondary)" }}>
+          Got it — we&apos;ll adjust your next recommendations.
+        </p>
+      )}
     </div>
   );
 }

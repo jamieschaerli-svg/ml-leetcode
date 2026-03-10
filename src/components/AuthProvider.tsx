@@ -2,16 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import { User } from '@supabase/supabase-js';
-import {
-  createBrowserClient,
-  isDevMode,
-  getDevSession,
-  setDevSession,
-  clearDevSession,
-  DEV_BYPASS_EMAIL,
-  DEV_BYPASS_PASSWORD,
-  AuthUser,
-} from '@/lib/auth';
+import { createBrowserClient, AuthUser } from '@/lib/auth';
 
 interface AuthContextValue {
   user: AuthUser | null;
@@ -19,7 +10,6 @@ interface AuthContextValue {
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signUp: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
-  isDevBypass: boolean;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -28,18 +18,16 @@ const AuthContext = createContext<AuthContextValue>({
   signIn: async () => ({ error: 'Not initialized' }),
   signUp: async () => ({ error: 'Not initialized' }),
   signOut: async () => {},
-  isDevBypass: false,
 });
 
 export function useAuth() {
   return useContext(AuthContext);
 }
 
-function supabaseUserToAuthUser(user: User): AuthUser {
+function toAuthUser(user: User): AuthUser {
   return {
     id: user.id,
     email: user.email || '',
-    isDevBypass: false,
   };
 }
 
@@ -48,34 +36,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const supabase = createBrowserClient();
 
-  // Check for existing session on mount
   useEffect(() => {
     async function init() {
-      // Check dev bypass first
-      if (isDevMode()) {
-        const devSession = getDevSession();
-        if (devSession) {
-          setUser(devSession);
-          setLoading(false);
-          return;
-        }
-      }
-
-      // Check Supabase session
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
-        setUser(supabaseUserToAuthUser(session.user));
+        setUser(toAuthUser(session.user));
       }
       setLoading(false);
     }
 
     init();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        setUser(supabaseUserToAuthUser(session.user));
-      } else if (!getDevSession()) {
+        setUser(toAuthUser(session.user));
+      } else {
         setUser(null);
       }
     });
@@ -84,18 +59,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = useCallback(async (email: string, password: string) => {
-    // Dev bypass — development only
-    if (isDevMode() && email === DEV_BYPASS_EMAIL && password === DEV_BYPASS_PASSWORD) {
-      const devUser: AuthUser = {
-        id: 'dev-local-user',
-        email: DEV_BYPASS_EMAIL,
-        isDevBypass: true,
-      };
-      setDevSession(devUser);
-      setUser(devUser);
-      return { error: null };
-    }
-
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return { error: error.message };
     return { error: null };
@@ -108,22 +71,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [supabase]);
 
   const signOut = useCallback(async () => {
-    clearDevSession();
     await supabase.auth.signOut();
     setUser(null);
   }, [supabase]);
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        signIn,
-        signUp,
-        signOut,
-        isDevBypass: user?.isDevBypass ?? false,
-      }}
-    >
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );

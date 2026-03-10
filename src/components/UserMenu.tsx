@@ -23,14 +23,6 @@ export default function UserMenu() {
     <div className="flex items-center gap-3">
       <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
         {user.email}
-        {user.isDevBypass && (
-          <span
-            className="ml-1 rounded px-1.5 py-0.5 text-[10px] font-bold uppercase"
-            style={{ background: 'var(--warning)' + '33', color: 'var(--warning)' }}
-          >
-            dev
-          </span>
-        )}
       </span>
       <button
         onClick={() => signOut()}

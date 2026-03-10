@@ -3,6 +3,7 @@
 import { useState, use } from "react";
 import Link from "next/link";
 import { problems } from "@/data/problems";
+import Header from "@/components/Header";
 import CodeEditor from "@/components/CodeEditor";
 import HintSystem from "@/components/HintSystem";
 import FeedbackButtons from "@/components/FeedbackButtons";
@@ -59,38 +60,30 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
 
   return (
     <div className="min-h-screen">
-      {/* Header */}
-      <header className="border-b border-white/10 px-6 py-4">
-        <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <Link href="/" className="text-lg font-bold">
-            <span style={{ color: "var(--accent)" }}>ML</span> LeetCode
-          </Link>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setMode("learning")}
-              className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
-                mode === "learning"
-                  ? "font-semibold"
-                  : "opacity-50 hover:opacity-80"
-              }`}
-              style={mode === "learning" ? { background: "var(--accent)" + "33", color: "var(--accent)" } : {}}
-            >
-              Learning
-            </button>
-            <button
-              onClick={() => setMode("challenge")}
-              className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
-                mode === "challenge"
-                  ? "font-semibold"
-                  : "opacity-50 hover:opacity-80"
-              }`}
-              style={mode === "challenge" ? { background: "var(--warning)" + "33", color: "var(--warning)" } : {}}
-            >
-              Challenge
-            </button>
-          </div>
+      <Header>
+        <div className="flex items-center rounded-full border border-white/10 bg-white/5 p-0.5">
+          <button
+            onClick={() => setMode("learning")}
+            className={`rounded-full px-4 py-1.5 text-sm transition-all duration-200 ${
+              mode === "learning"
+                ? "bg-white text-black font-medium"
+                : "text-zinc-400 hover:text-white"
+            }`}
+          >
+            Learning
+          </button>
+          <button
+            onClick={() => setMode("challenge")}
+            className={`rounded-full px-4 py-1.5 text-sm transition-all duration-200 ${
+              mode === "challenge"
+                ? "bg-amber-500 text-black font-medium"
+                : "text-zinc-400 hover:text-white"
+            }`}
+          >
+            Challenge
+          </button>
         </div>
-      </header>
+      </Header>
 
       <div className="mx-auto grid max-w-6xl gap-6 px-6 py-8 lg:grid-cols-2">
         {/* Left: Problem description */}
@@ -98,30 +91,22 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
           <div>
             <div className="mb-2 flex items-center gap-3">
               <span
-                className="rounded-full px-3 py-0.5 text-xs font-bold uppercase"
-                style={{
-                  background:
-                    problem.difficulty === "easy"
-                      ? "var(--success)" + "22"
-                      : problem.difficulty === "medium"
-                      ? "var(--warning)" + "22"
-                      : "var(--error)" + "22",
-                  color:
-                    problem.difficulty === "easy"
-                      ? "var(--success)"
-                      : problem.difficulty === "medium"
-                      ? "var(--warning)"
-                      : "var(--error)",
-                }}
+                className={`rounded-full px-3 py-0.5 text-xs font-bold uppercase border ${
+                  problem.difficulty === "easy"
+                    ? "text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
+                    : problem.difficulty === "medium"
+                    ? "text-amber-400 border-amber-500/30 bg-amber-500/10"
+                    : "text-red-400 border-red-500/30 bg-red-500/10"
+                }`}
               >
                 {problem.difficulty}
               </span>
-              <span className="text-sm" style={{ color: "var(--text-secondary)" }}>
+              <span className="text-sm text-zinc-400">
                 Level {problem.level}
               </span>
             </div>
             <h1 className="text-2xl font-bold">{problem.title}</h1>
-            <p className="mt-3" style={{ color: "var(--text-secondary)" }}>
+            <p className="mt-3 text-zinc-400">
               {problem.description}
             </p>
           </div>
@@ -130,30 +115,30 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
             <>
               {/* Concept */}
               <div className="card">
-                <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider" style={{ color: "var(--accent)" }}>
+                <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-white">
                   Concept
                 </h3>
-                <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                <p className="text-sm leading-relaxed text-zinc-400">
                   {problem.concept}
                 </p>
               </div>
 
               {/* Real World Use */}
               <div className="card">
-                <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider" style={{ color: "var(--success)" }}>
+                <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-emerald-400">
                   Real-World Use
                 </h3>
-                <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                <p className="text-sm leading-relaxed text-zinc-400">
                   {problem.realWorldUse}
                 </p>
               </div>
 
               {/* Why It Matters */}
               <div className="card">
-                <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider" style={{ color: "var(--warning)" }}>
+                <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-amber-400">
                   Why This Matters
                 </h3>
-                <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                <p className="text-sm leading-relaxed text-zinc-400">
                   {problem.whyItMatters}
                 </p>
               </div>
@@ -185,22 +170,17 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
           {/* Output */}
           {output && (
             <div
-              className="rounded-lg border p-4 font-mono text-sm"
-              style={{
-                background: "var(--bg-secondary)",
-                borderColor:
-                  isCorrect === true
-                    ? "var(--success)"
-                    : isCorrect === false
-                    ? "var(--error)"
-                    : "transparent",
-              }}
+              className={`rounded-xl border p-4 font-mono text-sm bg-black/50 ${
+                isCorrect === true
+                  ? "border-emerald-500/50"
+                  : isCorrect === false
+                  ? "border-red-500/50"
+                  : "border-white/10"
+              }`}
             >
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wider"
-                style={{
-                  color: isCorrect === true ? "var(--success)" : isCorrect === false ? "var(--error)" : "var(--text-secondary)",
-                }}
-              >
+              <div className={`mb-2 text-xs font-semibold uppercase tracking-wider ${
+                isCorrect === true ? "text-emerald-400" : isCorrect === false ? "text-red-400" : "text-zinc-500"
+              }`}>
                 {isCorrect === true ? "Correct!" : isCorrect === false ? "Not quite..." : "Output"}
               </div>
               <pre className="whitespace-pre-wrap">{output}</pre>
@@ -209,8 +189,8 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
 
           {/* Solution */}
           {showSolution && (
-            <div className="rounded-lg border p-4" style={{ background: "var(--bg-secondary)", borderColor: "var(--accent)" + "44" }}>
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--accent)" }}>
+            <div className="rounded-xl border border-white/20 bg-black/50 p-4">
+              <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                 Solution
               </div>
               <pre className="font-mono text-sm whitespace-pre-wrap">{problem.solution}</pre>

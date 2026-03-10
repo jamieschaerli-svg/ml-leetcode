@@ -1,40 +1,81 @@
 @import "tailwindcss";
 
+@theme {
+  --color-zinc-400: #a1a1aa;
+  --color-zinc-300: #d4d4d8;
+  --color-zinc-500: #71717a;
+  --color-zinc-600: #52525b;
+  --color-emerald-500: #10b981;
+  --color-emerald-400: #34d399;
+  --color-blue-500: #3b82f6;
+  --color-blue-400: #60a5fa;
+}
+
 :root {
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #12121a;
-  --bg-card: #1a1a2e;
-  --accent: #6c63ff;
-  --accent-hover: #5a52d5;
-  --success: #00c853;
-  --warning: #ffab00;
-  --error: #ff5252;
-  --text-primary: #e8e8e8;
-  --text-secondary: #a0a0b0;
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --accent: #ffffff;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
 }
 
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-family: system-ui, -apple-system, sans-serif;
+}
+
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(to right, #ffffff, #a1a1aa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .bg-glow {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -10%);
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 60%);
+    z-index: -1;
+    pointer-events: none;
+  }
 }
 
 .btn-primary {
-  @apply px-6 py-3 rounded-lg font-semibold transition-all duration-200;
-  background: var(--accent);
-  color: white;
+  @apply px-6 py-2.5 rounded-full font-medium transition-all duration-300 text-sm;
+  background: white;
+  color: black;
 }
 .btn-primary:hover {
-  background: var(--accent-hover);
   transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
+}
+
+.btn-secondary {
+  @apply px-6 py-2.5 rounded-full font-medium transition-all duration-300 text-sm;
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  border: 1px solid var(--border-subtle);
+}
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .card {
   background: var(--bg-card);
-  border: 1px solid rgba(108, 99, 255, 0.15);
-  @apply rounded-xl p-6;
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(12px);
+  @apply rounded-2xl p-6 transition-all duration-300;
 }
 
 .card:hover {
-  border-color: rgba(108, 99, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
 }

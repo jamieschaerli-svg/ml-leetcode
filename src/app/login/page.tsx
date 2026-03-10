@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
-import { isDevMode, DEV_BYPASS_EMAIL, DEV_BYPASS_PASSWORD } from '@/lib/auth';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -37,17 +36,12 @@ export default function LoginPage() {
     }
   }
 
-  function handleDevLogin() {
-    setEmail(DEV_BYPASS_EMAIL);
-    setPassword(DEV_BYPASS_PASSWORD);
-  }
-
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold">
-            <span style={{ color: 'var(--accent)' }}>ML</span> LeetCode
+            <span style={{ color: 'var(--accent)' }}>Code</span>Pro
           </h1>
           <p className="mt-2" style={{ color: 'var(--text-secondary)' }}>
             {isSignUp ? 'Create your account' : 'Sign in to continue learning'}
@@ -91,7 +85,7 @@ export default function LoginPage() {
                 required
                 minLength={6}
                 className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition-colors focus:border-[var(--accent)]"
-                placeholder="••••••••"
+                placeholder="Min. 6 characters"
               />
             </div>
 
@@ -143,22 +137,6 @@ export default function LoginPage() {
               {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
             </button>
           </div>
-
-          {/* Dev bypass — only visible in development */}
-          {isDevMode() && (
-            <div className="mt-6 border-t border-white/10 pt-4">
-              <p className="mb-2 text-center text-xs" style={{ color: 'var(--text-secondary)' }}>
-                Development only
-              </p>
-              <button
-                onClick={handleDevLogin}
-                className="w-full rounded-lg border border-dashed border-white/20 px-4 py-2 text-sm transition-colors hover:border-white/40"
-                style={{ color: 'var(--text-secondary)' }}
-              >
-                Fill dev credentials
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>
