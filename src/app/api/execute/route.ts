@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const FORBIDDEN = [
+  "import os", "import subprocess", "import sys", "open(",
+  "__import__", "exec(", "eval(", "import shutil", "import socket",
+  "import http", "import urllib",
+];
+
 export async function POST(req: NextRequest) {
   const { code } = await req.json();
 
@@ -11,14 +17,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Code too long (max 5000 chars)" });
   }
 
-  // Block dangerous operations
-  const forbidden = [
-    "import os", "import subprocess", "import sys", "open(",
-    "__import__", "exec(", "eval(", "import shutil", "import socket",
-    "import http", "import urllib",
-  ];
   const lower = code.toLowerCase();
-  for (const f of forbidden) {
+  for (const f of FORBIDDEN) {
     if (lower.includes(f.toLowerCase())) {
       return NextResponse.json({
         error: `Forbidden: ${f} is not allowed for security reasons.`,
@@ -26,47 +26,60 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Try Piston API (free, no key needed)
   try {
-    // Use Judge0 CE (free, no API key needed for basic use)
-    const createRes = await fetch(
+    const res = await fetch("https://emkc.org/api/v2/piston/execute", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        language: "python3",
+        version: "3.10.0",
+        files: [{ content: code }],
+      }),
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.run) {
+        if (data.run.stderr) {
+          return NextResponse.json({ error: data.run.stderr });
+        }
+        return NextResponse.json({ output: data.run.stdout || "" });
+      }
+    }
+  } catch {
+    // Piston failed, try Judge0
+  }
+
+  // Fallback: Judge0 CE
+  try {
+    const res = await fetch(
       "https://judge0-ce.p.sulu.sh/submissions?base64_encoded=false&wait=true",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          language_id: 71, // Python 3
+          language_id: 71,
           source_code: code,
           stdin: "",
         }),
       }
     );
 
-    if (!createRes.ok) {
-      // Fallback: try OneCompiler API
-      return await fallbackExecute(code);
+    if (res.ok) {
+      const result = await res.json();
+      if (result.stderr) {
+        return NextResponse.json({ error: result.stderr });
+      }
+      if (result.compile_output) {
+        return NextResponse.json({ error: result.compile_output });
+      }
+      return NextResponse.json({ output: result.stdout || "" });
     }
-
-    const result = await createRes.json();
-
-    if (result.stderr) {
-      return NextResponse.json({ error: result.stderr });
-    }
-    if (result.compile_output) {
-      return NextResponse.json({ error: result.compile_output });
-    }
-
-    return NextResponse.json({ output: result.stdout || "" });
   } catch {
-    // Fallback execution
-    return await fallbackExecute(code);
+    // Judge0 also failed
   }
-}
 
-async function fallbackExecute(code: string) {
-  // Signal to client to use Pyodide instead
-  return NextResponse.json({
-    output: "",
-    usePyodide: true,
-    error: null,
-  });
+  // Both APIs failed — tell client to use Pyodide
+  return NextResponse.json({ output: "", usePyodide: true });
 }

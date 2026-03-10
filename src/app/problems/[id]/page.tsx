@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, useRef, use } from "react";
+
+declare global {
+  interface Window {
+    loadPyodide: (options: { indexURL: string }) => Promise<any>;
+  }
+}
 import Link from "next/link";
 import { problems } from "@/data/problems";
 import Header from "@/components/Header";
@@ -17,8 +23,10 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
   const [code, setCode] = useState(problem?.starterCode || "");
   const [showSolution, setShowSolution] = useState(false);
   const [mode, setMode] = useState<"learning" | "challenge">("learning");
+  const [running, setRunning] = useState(false);
   const [nextRec, setNextRec] = useState<{ id: number; title: string } | null>(null);
   const [skillLevel, setSkillLevel] = useState<number | null>(null);
+  const pyodideRef = useRef<any>(null);
 
   useEffect(() => {
     const summary = getSkillSummary();
@@ -38,14 +46,70 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
     );
   }
 
-  async function runCode() {
+  async function runWithPyodide(codeToRun: string): Promise<{ output: string; error?: string }> {
     try {
+      if (!pyodideRef.current) {
+        // Load Pyodide on demand
+        if (!window.loadPyodide) {
+          const script = document.createElement("script");
+          script.src = "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js";
+          document.head.appendChild(script);
+          await new Promise((resolve, reject) => {
+            script.onload = resolve;
+            script.onerror = () => reject(new Error("Failed to load Python runtime"));
+          });
+        }
+        pyodideRef.current = await window.loadPyodide({
+          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/",
+        });
+      }
+
+      const py = pyodideRef.current;
+      await py.runPythonAsync("import sys, io; sys.stdout = io.StringIO()");
+      await py.runPythonAsync(codeToRun);
+      const stdout = await py.runPythonAsync("sys.stdout.getvalue()");
+      return { output: stdout };
+    } catch (err) {
+      return { output: "", error: err instanceof Error ? err.message : String(err) };
+    }
+  }
+
+  async function runCode() {
+    setRunning(true);
+    setOutput("");
+    setIsCorrect(null);
+
+    try {
+      // Try server-side execution first
       const res = await fetch("/api/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
       });
       const data = await res.json();
+
+      // Server says use Pyodide (both APIs failed)
+      if (data.usePyodide) {
+        const pyResult = await runWithPyodide(code);
+        if (pyResult.error) {
+          setOutput(pyResult.error);
+          setIsCorrect(false);
+          recordAttempt(problem!.id, false);
+        } else {
+          const expected = problem!.testCases[0].expected.trim();
+          const actual = (pyResult.output || "").trim();
+          const correct = actual === expected;
+          setOutput(pyResult.output);
+          setIsCorrect(correct);
+          const updatedSkill = recordAttempt(problem!.id, correct);
+          setSkillLevel(Math.round(updatedSkill.level));
+          if (correct) {
+            const recs = getRecommendations(1);
+            if (recs.length > 0) setNextRec({ id: recs[0].problem.id, title: recs[0].problem.title });
+          }
+        }
+        return;
+      }
 
       if (data.error) {
         setOutput(data.error);
@@ -55,24 +119,35 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
       }
 
       setOutput(data.output);
-
       const expected = problem!.testCases[0].expected.trim();
       const actual = (data.output || "").trim();
       const correct = actual === expected;
       setIsCorrect(correct);
-
       const updatedSkill = recordAttempt(problem!.id, correct);
       setSkillLevel(Math.round(updatedSkill.level));
-
       if (correct) {
         const recs = getRecommendations(1);
-        if (recs.length > 0) {
-          setNextRec({ id: recs[0].problem.id, title: recs[0].problem.title });
-        }
+        if (recs.length > 0) setNextRec({ id: recs[0].problem.id, title: recs[0].problem.title });
       }
     } catch {
-      setOutput("Error connecting to server");
-      setIsCorrect(false);
+      // Server unreachable — try Pyodide directly
+      try {
+        const pyResult = await runWithPyodide(code);
+        if (pyResult.error) {
+          setOutput(pyResult.error);
+          setIsCorrect(false);
+        } else {
+          const expected = problem!.testCases[0].expected.trim();
+          const actual = (pyResult.output || "").trim();
+          setOutput(pyResult.output);
+          setIsCorrect(actual === expected);
+        }
+      } catch {
+        setOutput("Could not run code. Please check your internet connection.");
+        setIsCorrect(false);
+      }
+    } finally {
+      setRunning(false);
     }
   }
 
@@ -188,8 +263,8 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
           <CodeEditor code={code} onChange={setCode} />
 
           <div className="flex gap-3">
-            <button onClick={runCode} className="btn-primary flex-1">
-              Run Code
+            <button onClick={runCode} disabled={running} className="btn-primary flex-1 disabled:opacity-50">
+              {running ? "Running..." : "Run Code"}
             </button>
             {mode === "learning" && (
               <button
