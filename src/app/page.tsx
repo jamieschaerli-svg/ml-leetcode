@@ -186,7 +186,6 @@ export default function Home() {
 
       {/* Problems List */}
       <section id="problems" className="relative mx-auto max-w-4xl px-6 pb-32 pt-16">
-        <div className="absolute top-0 left-10 w-px h-full bg-gradient-to-b from-white/10 via-white/5 to-transparent hidden md:block"></div>
         <div className="mb-16 text-center">
           <h2 className="text-3xl font-bold tracking-tight mb-4 text-white">Problem Library</h2>
           <p className="text-zinc-400">Master concepts progressively from easy to hard.</p>
@@ -229,12 +228,12 @@ function ProblemSection({
       <div className="grid gap-2">
         {probs.map((p) => (
           <Link key={p.id} href={`/problems/${p.id}`}>
-            <div className="group flex cursor-pointer items-center justify-between rounded-xl border border-transparent hover:border-white/10 bg-white/[0.02] hover:bg-white/[0.04] p-4 transition-all duration-300">
+            <div className="group flex cursor-pointer items-center justify-between rounded-xl border border-transparent hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.06] hover:shadow-[0_0_15px_rgba(255,255,255,0.05)] p-4 transition-all duration-300">
               <div className="flex items-center gap-4">
-                <div className="font-medium text-zinc-300 group-hover:text-white transition-colors">{p.title}</div>
+                <div className="font-medium text-zinc-300 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] transition-all duration-300">{p.title}</div>
               </div>
               <div className="flex items-center gap-4">
-                <span className="text-xs font-medium px-2.5 py-1 rounded-md border" style={{ color: color, borderColor: `${color}30`, backgroundColor: `${color}10` }}>
+                <span className="text-xs font-medium px-2.5 py-1 rounded-md border transition-colors duration-300 group-hover:text-white group-hover:bg-white/10 group-hover:border-white/30" style={{ color: color, borderColor: `${color}30`, backgroundColor: `${color}10` }}>
                   {p.level}
                 </span>
                 <span className="text-zinc-600 group-hover:text-white transition-colors group-hover:translate-x-1 duration-300">→</span>
