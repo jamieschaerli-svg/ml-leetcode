@@ -1189,4 +1189,972 @@ export const problems: Problem[] = [
     ],
     testCases: [{ input: "", expected: "0.1643" }],
   },
+
+  // ==================== NUMPY (Levels 51-60) ====================
+  {
+    id: 51,
+    title: "NumPy: Create Arrays",
+    description:
+      "Import numpy as np. Create an array from [1, 2, 3, 4, 5]. Print the array as a list, its shape, and its number of dimensions.",
+    difficulty: "hard",
+    level: 51,
+    concept:
+      "NumPy arrays are the foundation of scientific computing in Python. Unlike lists, they support vectorized operations and are much faster for numerical work.",
+    realWorldUse:
+      "Every ML framework — TensorFlow, PyTorch, scikit-learn — uses NumPy arrays (or compatible tensors) as the core data structure.",
+    whyItMatters:
+      "You cannot do serious data science without NumPy. It's the first library every data scientist learns.",
+    starterCode:
+      "import numpy as np\n# Create array from [1, 2, 3, 4, 5]\n# Print as list, shape, and ndim\n",
+    solution:
+      "import numpy as np\narr = np.array([1, 2, 3, 4, 5])\nprint(arr.tolist())\nprint(arr.shape)\nprint(arr.ndim)",
+    hints: [
+      "Use np.array() to create an array from a list",
+      ".tolist() converts a numpy array back to a Python list",
+      ".shape gives dimensions, .ndim gives number of dimensions",
+    ],
+    testCases: [{ input: "", expected: "[1, 2, 3, 4, 5]\n(5,)\n1" }],
+  },
+  {
+    id: 52,
+    title: "NumPy: Array Arithmetic",
+    description:
+      "Create arrays a = [10, 20, 30] and b = [1, 2, 3]. Print (a + b) and (a * b) each as lists.",
+    difficulty: "hard",
+    level: 52,
+    concept:
+      "NumPy performs element-wise operations automatically. Adding two arrays adds corresponding elements — no loops needed.",
+    realWorldUse:
+      "Vectorized math is how ML computes predictions, gradients, and loss functions efficiently on millions of data points.",
+    whyItMatters:
+      "Element-wise operations replace slow Python loops with fast C-level computation. This is why NumPy is 100x faster than pure Python.",
+    starterCode:
+      "import numpy as np\na = np.array([10, 20, 30])\nb = np.array([1, 2, 3])\n# Print (a + b) and (a * b) as lists\n",
+    solution:
+      "import numpy as np\na = np.array([10, 20, 30])\nb = np.array([1, 2, 3])\nprint((a + b).tolist())\nprint((a * b).tolist())",
+    hints: [
+      "NumPy arrays support +, -, *, / element-wise",
+      "Use .tolist() to convert result to a Python list",
+      "a + b adds corresponding elements: [11, 22, 33]",
+    ],
+    testCases: [{ input: "", expected: "[11, 22, 33]\n[10, 40, 90]" }],
+  },
+  {
+    id: 53,
+    title: "NumPy: Reshape Arrays",
+    description:
+      "Use np.arange(1, 7) to create [1, 2, 3, 4, 5, 6]. Reshape it to a 2x3 matrix. Print the result as a list and print the shape.",
+    difficulty: "hard",
+    level: 53,
+    concept:
+      "Reshaping changes array dimensions without altering data. A 1D array of 6 elements can become 2x3, 3x2, or 6x1.",
+    realWorldUse:
+      "Reshaping is constant in ML — flattening images for fully-connected layers, reshaping batches, preparing inputs for convolutions.",
+    whyItMatters:
+      "Data rarely comes in the shape your model expects. Reshaping is how you bridge the gap between raw data and model input.",
+    starterCode:
+      "import numpy as np\narr = np.arange(1, 7)\n# Reshape to 2x3, print as list and print shape\n",
+    solution:
+      "import numpy as np\narr = np.arange(1, 7)\nreshaped = arr.reshape(2, 3)\nprint(reshaped.tolist())\nprint(reshaped.shape)",
+    hints: [
+      "np.arange(1, 7) creates [1, 2, 3, 4, 5, 6]",
+      "Use .reshape(rows, cols) to change dimensions",
+      "Total elements must match: 2 * 3 = 6",
+    ],
+    testCases: [{ input: "", expected: "[[1, 2, 3], [4, 5, 6]]\n(2, 3)" }],
+  },
+  {
+    id: 54,
+    title: "NumPy: Array Slicing",
+    description:
+      "Create arr = np.array([10, 20, 30, 40, 50, 60, 70, 80, 90, 100]). Print elements at index 2 through 6 (exclusive), every other element, and the reversed array — all as lists.",
+    difficulty: "hard",
+    level: 54,
+    concept:
+      "NumPy slicing uses [start:stop:step] syntax, just like Python lists but much more powerful with multidimensional arrays.",
+    realWorldUse:
+      "Slicing extracts batches, selects feature columns, crops image regions, and splits time series windows.",
+    whyItMatters:
+      "Efficient data selection without copying is essential when working with large datasets that don't fit in memory twice.",
+    starterCode:
+      "import numpy as np\narr = np.array([10, 20, 30, 40, 50, 60, 70, 80, 90, 100])\n# Print arr[2:7], arr[::2], arr[::-1] as lists\n",
+    solution:
+      "import numpy as np\narr = np.array([10, 20, 30, 40, 50, 60, 70, 80, 90, 100])\nprint(arr[2:7].tolist())\nprint(arr[::2].tolist())\nprint(arr[::-1].tolist())",
+    hints: [
+      "arr[2:7] gets elements at indices 2, 3, 4, 5, 6",
+      "arr[::2] gets every other element (step of 2)",
+      "arr[::-1] reverses the array",
+    ],
+    testCases: [{ input: "", expected: "[30, 40, 50, 60, 70]\n[10, 30, 50, 70, 90]\n[100, 90, 80, 70, 60, 50, 40, 30, 20, 10]" }],
+  },
+  {
+    id: 55,
+    title: "NumPy: Statistical Functions",
+    description:
+      "Given data = np.array([2, 4, 4, 4, 5, 5, 7, 9]), print the mean, median, and standard deviation.",
+    difficulty: "hard",
+    level: 55,
+    concept:
+      "NumPy provides optimized statistical functions: np.mean(), np.median(), np.std() that operate on entire arrays at once.",
+    realWorldUse:
+      "Computing statistics is the first step of any data analysis — understanding central tendency, spread, and distribution of features.",
+    whyItMatters:
+      "Manual statistics code is slow and error-prone. NumPy functions are tested, optimized, and handle edge cases.",
+    starterCode:
+      "import numpy as np\ndata = np.array([2, 4, 4, 4, 5, 5, 7, 9])\n# Print mean, median, std\n",
+    solution:
+      "import numpy as np\ndata = np.array([2, 4, 4, 4, 5, 5, 7, 9])\nprint(np.mean(data))\nprint(np.median(data))\nprint(np.std(data))",
+    hints: [
+      "np.mean() computes the average",
+      "np.median() finds the middle value",
+      "np.std() computes population standard deviation",
+    ],
+    testCases: [{ input: "", expected: "5.0\n4.5\n2.0" }],
+  },
+  {
+    id: 56,
+    title: "NumPy: Boolean Indexing",
+    description:
+      "Given arr = np.array([15, 22, 8, 31, 4, 19, 27, 11]), print all elements greater than 15 as a list, then print all even elements as a list.",
+    difficulty: "hard",
+    level: 56,
+    concept:
+      "Boolean indexing filters arrays using conditions. arr[arr > 5] returns only elements where the condition is True.",
+    realWorldUse:
+      "Filtering data by conditions — selecting outliers, thresholding predictions, masking invalid values in datasets.",
+    whyItMatters:
+      "Boolean indexing replaces loops and if-statements with concise, vectorized filtering that's orders of magnitude faster.",
+    starterCode:
+      "import numpy as np\narr = np.array([15, 22, 8, 31, 4, 19, 27, 11])\n# Print elements > 15, then even elements, as lists\n",
+    solution:
+      "import numpy as np\narr = np.array([15, 22, 8, 31, 4, 19, 27, 11])\nprint(arr[arr > 15].tolist())\nprint(arr[arr % 2 == 0].tolist())",
+    hints: [
+      "arr > 15 creates a boolean mask like [False, True, ...]",
+      "arr[mask] returns only elements where mask is True",
+      "arr % 2 == 0 checks for even numbers",
+    ],
+    testCases: [{ input: "", expected: "[22, 31, 19, 27]\n[22, 8, 4]" }],
+  },
+  {
+    id: 57,
+    title: "NumPy: Special Arrays",
+    description:
+      "Print np.zeros(3) as a list, np.ones(4) as a list, and np.eye(3) as a list (identity matrix).",
+    difficulty: "hard",
+    level: 57,
+    concept:
+      "NumPy provides factory functions for common arrays: zeros(), ones(), eye() (identity matrix), and more.",
+    realWorldUse:
+      "Initializing weight matrices, creating masks, building identity transforms, and allocating buffers for computation.",
+    whyItMatters:
+      "Proper initialization matters in ML. Weight initialization strategy can determine whether a neural network learns at all.",
+    starterCode:
+      "import numpy as np\n# Print zeros(3), ones(4), and eye(3) as lists\n",
+    solution:
+      "import numpy as np\nprint(np.zeros(3).tolist())\nprint(np.ones(4).tolist())\nprint(np.eye(3).tolist())",
+    hints: [
+      "np.zeros(n) creates an array of n zeros",
+      "np.ones(n) creates an array of n ones",
+      "np.eye(n) creates an n×n identity matrix",
+    ],
+    testCases: [{ input: "", expected: "[0.0, 0.0, 0.0]\n[1.0, 1.0, 1.0, 1.0]\n[[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]" }],
+  },
+  {
+    id: 58,
+    title: "NumPy: Arange & Linspace",
+    description:
+      "Print np.arange(0, 10, 2) as a list and np.linspace(0, 1, 5) as a list.",
+    difficulty: "hard",
+    level: 58,
+    concept:
+      "arange(start, stop, step) creates evenly spaced values by step size. linspace(start, stop, num) creates a specific number of evenly spaced points.",
+    realWorldUse:
+      "Creating x-axes for plots, generating grid points for evaluation, defining learning rate schedules.",
+    whyItMatters:
+      "Generating sequences efficiently is needed constantly — from plotting to creating test inputs to defining hyperparameter grids.",
+    starterCode:
+      "import numpy as np\n# Print arange(0, 10, 2) and linspace(0, 1, 5) as lists\n",
+    solution:
+      "import numpy as np\nprint(np.arange(0, 10, 2).tolist())\nprint(np.linspace(0, 1, 5).tolist())",
+    hints: [
+      "np.arange(0, 10, 2) gives [0, 2, 4, 6, 8]",
+      "np.linspace(0, 1, 5) gives 5 points from 0 to 1 inclusive",
+      "Use .tolist() to convert to Python list",
+    ],
+    testCases: [{ input: "", expected: "[0, 2, 4, 6, 8]\n[0.0, 0.25, 0.5, 0.75, 1.0]" }],
+  },
+  {
+    id: 59,
+    title: "NumPy: Matrix Multiplication",
+    description:
+      "Create matrices A = [[1, 2], [3, 4]] and B = [[5, 6], [7, 8]]. Compute and print the matrix product using np.dot() as a list.",
+    difficulty: "hard",
+    level: 59,
+    concept:
+      "Matrix multiplication (dot product) multiplies rows of A by columns of B and sums. Result[i][j] = sum(A[i][k] * B[k][j]).",
+    realWorldUse:
+      "Matrix multiplication is the core operation of neural networks — every layer computes output = weights @ input + bias.",
+    whyItMatters:
+      "Understanding matrix multiplication is non-negotiable for deep learning. GPUs exist specifically to accelerate this operation.",
+    starterCode:
+      "import numpy as np\nA = np.array([[1, 2], [3, 4]])\nB = np.array([[5, 6], [7, 8]])\n# Compute and print matrix product as list\n",
+    solution:
+      "import numpy as np\nA = np.array([[1, 2], [3, 4]])\nB = np.array([[5, 6], [7, 8]])\nC = np.dot(A, B)\nprint(C.tolist())",
+    hints: [
+      "np.dot(A, B) or A @ B computes matrix multiplication",
+      "Result[0][0] = 1*5 + 2*7 = 19",
+      "Result shape: (2,2) @ (2,2) = (2,2)",
+    ],
+    testCases: [{ input: "", expected: "[[19, 22], [43, 50]]" }],
+  },
+  {
+    id: 60,
+    title: "NumPy: Stacking Arrays",
+    description:
+      "Given a = np.array([1, 2, 3]) and b = np.array([4, 5, 6]), print np.vstack, np.hstack, and np.concatenate results as lists.",
+    difficulty: "hard",
+    level: 60,
+    concept:
+      "vstack stacks arrays vertically (row-wise), hstack horizontally (column-wise), and concatenate joins along an axis.",
+    realWorldUse:
+      "Combining feature matrices, stacking batch outputs, merging datasets from different sources.",
+    whyItMatters:
+      "Real data comes in pieces. Stacking operations are how you assemble complete datasets from fragments.",
+    starterCode:
+      "import numpy as np\na = np.array([1, 2, 3])\nb = np.array([4, 5, 6])\n# Print vstack, hstack, concatenate as lists\n",
+    solution:
+      "import numpy as np\na = np.array([1, 2, 3])\nb = np.array([4, 5, 6])\nprint(np.vstack([a, b]).tolist())\nprint(np.hstack([a, b]).tolist())\nprint(np.concatenate([a, b]).tolist())",
+    hints: [
+      "np.vstack stacks as rows: [[1,2,3],[4,5,6]]",
+      "np.hstack joins side by side: [1,2,3,4,5,6]",
+      "np.concatenate joins along axis 0 by default",
+    ],
+    testCases: [{ input: "", expected: "[[1, 2, 3], [4, 5, 6]]\n[1, 2, 3, 4, 5, 6]\n[1, 2, 3, 4, 5, 6]" }],
+  },
+
+  // ==================== PANDAS (Levels 61-70) ====================
+  {
+    id: 61,
+    title: "Pandas: Create a DataFrame",
+    description:
+      "Import pandas as pd. Create a DataFrame from {'name': ['Alice', 'Bob', 'Charlie'], 'age': [25, 30, 35]}. Print the shape and column names as a list.",
+    difficulty: "hard",
+    level: 61,
+    concept:
+      "A DataFrame is a 2D labeled data structure — like a spreadsheet or SQL table. It's the central object in Pandas.",
+    realWorldUse:
+      "DataFrames are how data scientists load, clean, explore, and transform datasets before feeding them to ML models.",
+    whyItMatters:
+      "Raw data is messy. Pandas gives you powerful tools to wrangle it into shape. It's the most-used data manipulation library.",
+    starterCode:
+      "import pandas as pd\ndata = {'name': ['Alice', 'Bob', 'Charlie'], 'age': [25, 30, 35]}\n# Create DataFrame, print shape and columns\n",
+    solution:
+      "import pandas as pd\ndata = {'name': ['Alice', 'Bob', 'Charlie'], 'age': [25, 30, 35]}\ndf = pd.DataFrame(data)\nprint(df.shape)\nprint(df.columns.tolist())",
+    hints: [
+      "pd.DataFrame(dict) creates a DataFrame from a dictionary",
+      ".shape gives (rows, columns)",
+      ".columns.tolist() gives column names as a list",
+    ],
+    testCases: [{ input: "", expected: "(3, 2)\n['name', 'age']" }],
+  },
+  {
+    id: 62,
+    title: "Pandas: Select & Access Data",
+    description:
+      "Create a DataFrame with columns A=[1,2,3], B=[4,5,6], C=[7,8,9]. Print column B as a list and the second row (index 1) as a list.",
+    difficulty: "hard",
+    level: 62,
+    concept:
+      "Access columns with df['col'] and rows with df.iloc[index]. These are the two most common selection operations.",
+    realWorldUse:
+      "Selecting specific features (columns) and samples (rows) is fundamental to data preparation and feature engineering.",
+    whyItMatters:
+      "Before you can analyze or model data, you need to select the right parts. Pandas makes this intuitive and fast.",
+    starterCode:
+      "import pandas as pd\ndf = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6], 'C': [7, 8, 9]})\n# Print column B and row at index 1 as lists\n",
+    solution:
+      "import pandas as pd\ndf = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6], 'C': [7, 8, 9]})\nprint(df['B'].tolist())\nprint(df.iloc[1].tolist())",
+    hints: [
+      "df['B'] selects column B as a Series",
+      "df.iloc[1] selects the row at integer position 1",
+      ".tolist() converts to a Python list",
+    ],
+    testCases: [{ input: "", expected: "[4, 5, 6]\n[2, 5, 8]" }],
+  },
+  {
+    id: 63,
+    title: "Pandas: Filter Rows",
+    description:
+      "Create a DataFrame with name=['Alice','Bob','Charlie','Diana'] and score=[85,62,91,78]. Filter rows where score >= 80 and print the names as a list.",
+    difficulty: "hard",
+    level: 63,
+    concept:
+      "Boolean filtering in Pandas: df[df['col'] > value] returns only rows where the condition is True.",
+    realWorldUse:
+      "Filtering data by conditions — selecting high-value customers, removing outliers, finding failed transactions.",
+    whyItMatters:
+      "Data analysis always involves asking questions like 'which rows meet this criteria?' Filtering is how you answer them.",
+    starterCode:
+      "import pandas as pd\ndf = pd.DataFrame({'name': ['Alice', 'Bob', 'Charlie', 'Diana'], 'score': [85, 62, 91, 78]})\n# Filter score >= 80, print names as list\n",
+    solution:
+      "import pandas as pd\ndf = pd.DataFrame({'name': ['Alice', 'Bob', 'Charlie', 'Diana'], 'score': [85, 62, 91, 78]})\npassed = df[df['score'] >= 80]\nprint(passed['name'].tolist())",
+    hints: [
+      "df['score'] >= 80 creates a boolean mask",
+      "df[mask] returns only rows where mask is True",
+      "Then select the 'name' column from the result",
+    ],
+    testCases: [{ input: "", expected: "['Alice', 'Charlie']" }],
+  },
+  {
+    id: 64,
+    title: "Pandas: GroupBy & Aggregate",
+    description:
+      "Create a DataFrame with dept=['A','B','A','B','A'] and salary=[50,60,55,65,45]. Group by dept and print the mean salary for dept A and dept B.",
+    difficulty: "hard",
+    level: 64,
+    concept:
+      "GroupBy splits data into groups, applies a function (like mean), and combines results. It's SQL's GROUP BY for Python.",
+    realWorldUse:
+      "Aggregating metrics by category — average revenue per region, mean accuracy per model, total sales per product.",
+    whyItMatters:
+      "GroupBy is one of the most powerful operations in data analysis. It turns raw data into actionable summaries.",
+    starterCode:
+      "import pandas as pd\ndf = pd.DataFrame({'dept': ['A', 'B', 'A', 'B', 'A'], 'salary': [50, 60, 55, 65, 45]})\n# Group by dept, print mean salary for A and B\n",
+    solution:
+      "import pandas as pd\ndf = pd.DataFrame({'dept': ['A', 'B', 'A', 'B', 'A'], 'salary': [50, 60, 55, 65, 45]})\nresult = df.groupby('dept')['salary'].mean()\nprint(result['A'])\nprint(result['B'])",
+    hints: [
+      "df.groupby('dept') groups rows by department",
+      "['salary'].mean() computes the mean salary per group",
+      "Access results with result['A'] and result['B']",
+    ],
+    testCases: [{ input: "", expected: "50.0\n62.5" }],
+  },
+  {
+    id: 65,
+    title: "Pandas: Handle Missing Values",
+    description:
+      "Create a DataFrame with A=[1, NaN, 3, NaN, 5] and B=[NaN, 2, NaN, 4, 5]. Print the count of nulls per column as a list, then fill NaN with 0 and print column A as a list.",
+    difficulty: "hard",
+    level: 65,
+    concept:
+      "Missing data (NaN) is common in real datasets. Pandas provides isnull(), fillna(), dropna() to detect and handle it.",
+    realWorldUse:
+      "Real-world data always has missing values — sensor failures, incomplete surveys, failed API calls. Handling them is critical.",
+    whyItMatters:
+      "Most ML models can't handle NaN values. You must decide whether to fill, interpolate, or drop missing data.",
+    starterCode:
+      "import pandas as pd\nimport numpy as np\ndf = pd.DataFrame({'A': [1, np.nan, 3, np.nan, 5], 'B': [np.nan, 2, np.nan, 4, 5]})\n# Print null counts as list, fill NaN with 0, print column A as list\n",
+    solution:
+      "import pandas as pd\nimport numpy as np\ndf = pd.DataFrame({'A': [1, np.nan, 3, np.nan, 5], 'B': [np.nan, 2, np.nan, 4, 5]})\nprint(df.isnull().sum().tolist())\ndf_filled = df.fillna(0)\nprint(df_filled['A'].tolist())",
+    hints: [
+      "df.isnull().sum() counts NaN values per column",
+      "df.fillna(0) replaces all NaN with 0",
+      "NaN columns become float, so filled values will be 1.0 not 1",
+    ],
+    testCases: [{ input: "", expected: "[2, 2]\n[1.0, 0.0, 3.0, 0.0, 5.0]" }],
+  },
+  {
+    id: 66,
+    title: "Pandas: Sort Values",
+    description:
+      "Create a DataFrame with name=['Charlie','Alice','Bob'] and score=[78,92,85]. Sort by score descending and print the names as a list.",
+    difficulty: "hard",
+    level: 66,
+    concept:
+      "sort_values() orders a DataFrame by one or more columns. Use ascending=False for descending order.",
+    realWorldUse:
+      "Ranking results, finding top-N items, sorting leaderboards, ordering time series data.",
+    whyItMatters:
+      "Sorted data reveals patterns — top performers, worst outliers, trends over time. It's a basic but essential operation.",
+    starterCode:
+      "import pandas as pd\ndf = pd.DataFrame({'name': ['Charlie', 'Alice', 'Bob'], 'score': [78, 92, 85]})\n# Sort by score descending, print names as list\n",
+    solution:
+      "import pandas as pd\ndf = pd.DataFrame({'name': ['Charlie', 'Alice', 'Bob'], 'score': [78, 92, 85]})\nsorted_df = df.sort_values('score', ascending=False)\nprint(sorted_df['name'].tolist())",
+    hints: [
+      "df.sort_values('column') sorts by that column",
+      "ascending=False gives descending order",
+      "The result is a new DataFrame (original unchanged)",
+    ],
+    testCases: [{ input: "", expected: "['Alice', 'Bob', 'Charlie']" }],
+  },
+  {
+    id: 67,
+    title: "Pandas: Apply Function",
+    description:
+      "Create a DataFrame with temp_c=[0, 20, 37, 100]. Use .apply() with a lambda to convert Celsius to Fahrenheit (F = C * 9/5 + 32). Print the Fahrenheit values as a list.",
+    difficulty: "hard",
+    level: 67,
+    concept:
+      "The .apply() method runs a function on every element of a Series or every row/column of a DataFrame.",
+    realWorldUse:
+      "Custom transformations — feature engineering, unit conversions, text cleaning, applying business rules to data.",
+    whyItMatters:
+      "When built-in operations aren't enough, .apply() lets you run any custom logic across your data efficiently.",
+    starterCode:
+      "import pandas as pd\ndf = pd.DataFrame({'temp_c': [0, 20, 37, 100]})\n# Convert to Fahrenheit using apply, print as list\n",
+    solution:
+      "import pandas as pd\ndf = pd.DataFrame({'temp_c': [0, 20, 37, 100]})\ndf['temp_f'] = df['temp_c'].apply(lambda c: c * 9/5 + 32)\nprint(df['temp_f'].tolist())",
+    hints: [
+      "Use .apply(lambda c: c * 9/5 + 32) on the column",
+      "F = C × 9/5 + 32 is the conversion formula",
+      "0°C = 32°F, 100°C = 212°F",
+    ],
+    testCases: [{ input: "", expected: "[32.0, 68.0, 98.6, 212.0]" }],
+  },
+  {
+    id: 68,
+    title: "Pandas: Value Counts",
+    description:
+      "Create a Series from ['cat', 'dog', 'cat', 'bird', 'dog', 'cat']. Use value_counts() and print the count for each animal.",
+    difficulty: "hard",
+    level: 68,
+    concept:
+      "value_counts() returns a Series with counts of unique values, sorted from most to least frequent.",
+    realWorldUse:
+      "Understanding data distributions — class imbalance detection, frequency analysis, finding most common categories.",
+    whyItMatters:
+      "Knowing the distribution of your data is critical. Class imbalance can ruin model performance if not detected.",
+    starterCode:
+      "import pandas as pd\ns = pd.Series(['cat', 'dog', 'cat', 'bird', 'dog', 'cat'])\n# Print count for cat, dog, bird\n",
+    solution:
+      "import pandas as pd\ns = pd.Series(['cat', 'dog', 'cat', 'bird', 'dog', 'cat'])\ncounts = s.value_counts()\nprint(counts['cat'])\nprint(counts['dog'])\nprint(counts['bird'])",
+    hints: [
+      "s.value_counts() counts occurrences of each value",
+      "Access counts with counts['cat'], counts['dog'], etc.",
+      "Results are sorted by frequency (most common first)",
+    ],
+    testCases: [{ input: "", expected: "3\n2\n1" }],
+  },
+  {
+    id: 69,
+    title: "Pandas: Merge DataFrames",
+    description:
+      "Create df1 with id=[1,2,3] and name=['Alice','Bob','Charlie']. Create df2 with id=[2,3,4] and score=[85,92,78]. Merge on 'id' (inner join) and print the names and scores as lists.",
+    difficulty: "hard",
+    level: 69,
+    concept:
+      "pd.merge() combines DataFrames like SQL JOIN. Inner join keeps only rows with matching keys in both tables.",
+    realWorldUse:
+      "Combining data from different sources — merging user profiles with transaction data, joining features from multiple tables.",
+    whyItMatters:
+      "Real data lives in multiple tables. Merging is how you create unified datasets for analysis and modeling.",
+    starterCode:
+      "import pandas as pd\ndf1 = pd.DataFrame({'id': [1, 2, 3], 'name': ['Alice', 'Bob', 'Charlie']})\ndf2 = pd.DataFrame({'id': [2, 3, 4], 'score': [85, 92, 78]})\n# Merge on id, print names and scores as lists\n",
+    solution:
+      "import pandas as pd\ndf1 = pd.DataFrame({'id': [1, 2, 3], 'name': ['Alice', 'Bob', 'Charlie']})\ndf2 = pd.DataFrame({'id': [2, 3, 4], 'score': [85, 92, 78]})\nmerged = pd.merge(df1, df2, on='id')\nprint(merged['name'].tolist())\nprint(merged['score'].tolist())",
+    hints: [
+      "pd.merge(df1, df2, on='id') joins on the id column",
+      "Inner join (default) keeps only matching rows: ids 2 and 3",
+      "Id 1 is only in df1, id 4 is only in df2 — both excluded",
+    ],
+    testCases: [{ input: "", expected: "['Bob', 'Charlie']\n[85, 92]" }],
+  },
+  {
+    id: 70,
+    title: "Pandas: Describe Statistics",
+    description:
+      "Create a DataFrame with values=[10, 20, 30, 40, 50]. Use .describe() and print the mean, min, max, and count (as int).",
+    difficulty: "hard",
+    level: 70,
+    concept:
+      "describe() generates summary statistics — count, mean, std, min, 25%, 50%, 75%, max — in one call.",
+    realWorldUse:
+      "Quick data profiling — the first thing you run on a new dataset to understand its scale and distribution.",
+    whyItMatters:
+      "Before modeling, you need to understand your data. describe() gives you the essential summary in seconds.",
+    starterCode:
+      "import pandas as pd\ndf = pd.DataFrame({'values': [10, 20, 30, 40, 50]})\n# Use describe(), print mean, min, max, count\n",
+    solution:
+      "import pandas as pd\ndf = pd.DataFrame({'values': [10, 20, 30, 40, 50]})\nstats = df['values'].describe()\nprint(stats['mean'])\nprint(stats['min'])\nprint(stats['max'])\nprint(int(stats['count']))",
+    hints: [
+      "stats = df['values'].describe() returns a summary Series",
+      "Access values with stats['mean'], stats['min'], etc.",
+      "count is a float by default, cast to int for clean output",
+    ],
+    testCases: [{ input: "", expected: "30.0\n10.0\n50.0\n5" }],
+  },
+
+  // ==================== MATPLOTLIB (Levels 71-80) ====================
+  {
+    id: 71,
+    title: "Matplotlib: Figure & Axes",
+    description:
+      "Create a figure with axes. Set the title to 'My First Plot', x-label to 'X Axis', and y-label to 'Y Axis'. Print the title, xlabel, and ylabel.",
+    difficulty: "hard",
+    level: 71,
+    concept:
+      "Matplotlib uses a Figure (the window) containing Axes (the actual plot). plt.subplots() creates both at once.",
+    realWorldUse:
+      "Every data visualization starts by creating a figure and configuring its axes — labels, titles, and scales.",
+    whyItMatters:
+      "Visualization communicates insights. Well-labeled plots are how data scientists present findings to stakeholders.",
+    starterCode:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\n# Create figure, set title and labels, print them\n",
+    solution:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\nfig, ax = plt.subplots()\nax.set_title('My First Plot')\nax.set_xlabel('X Axis')\nax.set_ylabel('Y Axis')\nprint(ax.get_title())\nprint(ax.get_xlabel())\nprint(ax.get_ylabel())",
+    hints: [
+      "fig, ax = plt.subplots() creates figure and axes",
+      "ax.set_title(), set_xlabel(), set_ylabel() configure labels",
+      "ax.get_title() etc. retrieve the current values",
+    ],
+    testCases: [{ input: "", expected: "My First Plot\nX Axis\nY Axis" }],
+  },
+  {
+    id: 72,
+    title: "Matplotlib: Line Plots",
+    description:
+      "Create two line plots: [1,2,3,4] vs [1,4,9,16] labeled 'Squares' and [1,2,3,4] vs [1,8,27,64] labeled 'Cubes'. Print the number of lines and their labels.",
+    difficulty: "hard",
+    level: 72,
+    concept:
+      "ax.plot() adds line plots. Each call adds a new line. Labels are used by the legend to identify each line.",
+    realWorldUse:
+      "Comparing trends — plotting training vs validation loss, comparing model performances, visualizing time series.",
+    whyItMatters:
+      "Line plots are the most common visualization. Comparing multiple series on one plot reveals relationships and differences.",
+    starterCode:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\nfig, ax = plt.subplots()\n# Plot squares and cubes, print line count and labels\n",
+    solution:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\nfig, ax = plt.subplots()\nax.plot([1, 2, 3, 4], [1, 4, 9, 16], label='Squares')\nax.plot([1, 2, 3, 4], [1, 8, 27, 64], label='Cubes')\nprint(len(ax.lines))\nlabels = [line.get_label() for line in ax.lines]\nprint(labels)",
+    hints: [
+      "ax.plot(x, y, label='name') adds a labeled line",
+      "ax.lines contains all Line2D objects on the axes",
+      "line.get_label() returns the line's label string",
+    ],
+    testCases: [{ input: "", expected: "2\n['Squares', 'Cubes']" }],
+  },
+  {
+    id: 73,
+    title: "Matplotlib: Axis Limits",
+    description:
+      "Create a plot and set x-axis limits to (0, 10) and y-axis limits to (-5, 5). Print the x and y limits as tuples.",
+    difficulty: "hard",
+    level: 73,
+    concept:
+      "set_xlim() and set_ylim() control the visible range of each axis. get_xlim() and get_ylim() retrieve them.",
+    realWorldUse:
+      "Controlling axis ranges to focus on relevant data regions, standardizing scales across multiple plots.",
+    whyItMatters:
+      "Default axis limits may hide or distort your data. Manual control ensures your visualization tells the right story.",
+    starterCode:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\nfig, ax = plt.subplots()\n# Set xlim(0, 10) and ylim(-5, 5), print both\n",
+    solution:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\nfig, ax = plt.subplots()\nax.set_xlim(0, 10)\nax.set_ylim(-5, 5)\nprint(ax.get_xlim())\nprint(ax.get_ylim())",
+    hints: [
+      "ax.set_xlim(min, max) sets the x-axis range",
+      "ax.set_ylim(min, max) sets the y-axis range",
+      "get_xlim() returns a tuple of (min, max)",
+    ],
+    testCases: [{ input: "", expected: "(0.0, 10.0)\n(-5.0, 5.0)" }],
+  },
+  {
+    id: 74,
+    title: "Matplotlib: Bar Chart",
+    description:
+      "Create a bar chart with categories ['A', 'B', 'C', 'D'] and values [23, 45, 12, 67]. Print the heights of all bars as a list.",
+    difficulty: "hard",
+    level: 74,
+    concept:
+      "ax.bar() creates vertical bar charts. Each bar is a Rectangle patch with properties like height, width, and position.",
+    realWorldUse:
+      "Comparing quantities across categories — revenue by region, accuracy by model, counts by class.",
+    whyItMatters:
+      "Bar charts are the go-to for categorical comparisons. Knowing how to create and customize them is essential.",
+    starterCode:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\ncategories = ['A', 'B', 'C', 'D']\nvalues = [23, 45, 12, 67]\n# Create bar chart, print heights\n",
+    solution:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\ncategories = ['A', 'B', 'C', 'D']\nvalues = [23, 45, 12, 67]\nfig, ax = plt.subplots()\nbars = ax.bar(categories, values)\nheights = [b.get_height() for b in bars]\nprint(heights)",
+    hints: [
+      "ax.bar(categories, values) creates the bar chart",
+      "It returns a BarContainer of Rectangle patches",
+      "bar.get_height() returns each bar's height",
+    ],
+    testCases: [{ input: "", expected: "[23.0, 45.0, 12.0, 67.0]" }],
+  },
+  {
+    id: 75,
+    title: "Matplotlib: Histogram",
+    description:
+      "Create a histogram of data = [1, 1, 2, 2, 2, 3, 3, 4, 5, 5] with 5 bins. Print the counts as integers and the number of patches.",
+    difficulty: "hard",
+    level: 75,
+    concept:
+      "Histograms show data distribution by grouping values into bins and counting occurrences in each bin.",
+    realWorldUse:
+      "Visualizing feature distributions, checking for normality, detecting skew and outliers in your dataset.",
+    whyItMatters:
+      "Understanding data distribution is step one of any analysis. Histograms reveal patterns invisible in raw numbers.",
+    starterCode:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\ndata = [1, 1, 2, 2, 2, 3, 3, 4, 5, 5]\n# Create histogram with 5 bins, print counts and patch count\n",
+    solution:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\ndata = [1, 1, 2, 2, 2, 3, 3, 4, 5, 5]\nfig, ax = plt.subplots()\ncounts, bins, patches = ax.hist(data, bins=5)\nprint([int(c) for c in counts])\nprint(len(patches))",
+    hints: [
+      "ax.hist(data, bins=5) returns counts, bin edges, and patches",
+      "counts tells how many values fall in each bin",
+      "The number of patches equals the number of bins",
+    ],
+    testCases: [{ input: "", expected: "[2, 3, 2, 1, 2]\n5" }],
+  },
+  {
+    id: 76,
+    title: "Matplotlib: Subplots Grid",
+    description:
+      "Create a 2x3 grid of subplots. Print the shape of the axes array and the total number of axes in the figure.",
+    difficulty: "hard",
+    level: 76,
+    concept:
+      "plt.subplots(rows, cols) creates a grid of axes. The axes array has shape (rows, cols) for multi-row/col grids.",
+    realWorldUse:
+      "Comparing multiple visualizations side-by-side — feature distributions, model comparisons, multi-panel dashboards.",
+    whyItMatters:
+      "Real analyses need multiple plots. Subplots let you tell a complete visual story in a single figure.",
+    starterCode:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\n# Create 2x3 subplot grid, print axes shape and total count\n",
+    solution:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\nfig, axes = plt.subplots(2, 3)\nprint(axes.shape)\nprint(len(fig.axes))",
+    hints: [
+      "plt.subplots(2, 3) creates a 2-row, 3-column grid",
+      "axes is a 2D numpy array with shape (2, 3)",
+      "fig.axes lists all axes objects in the figure",
+    ],
+    testCases: [{ input: "", expected: "(2, 3)\n6" }],
+  },
+  {
+    id: 77,
+    title: "Matplotlib: Multiple Lines & Colors",
+    description:
+      "Plot 4 lines on one axes (y=x, y=x+1, y=x+2, y=x+3 for x=[0,1]). Print the number of lines and verify all have unique colors.",
+    difficulty: "hard",
+    level: 77,
+    concept:
+      "Matplotlib automatically cycles through colors for each new plot. You can also specify colors manually.",
+    realWorldUse:
+      "Comparing multiple time series, plotting prediction intervals, overlaying different model outputs.",
+    whyItMatters:
+      "Distinguishable colors are critical for readability. Matplotlib's color cycle handles this automatically.",
+    starterCode:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\nfig, ax = plt.subplots()\n# Plot 4 lines, print count and unique color count\n",
+    solution:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\nfig, ax = plt.subplots()\nfor i in range(4):\n    ax.plot([0, 1], [i, i + 1])\nprint(len(ax.lines))\ncolors = [line.get_color() for line in ax.lines]\nprint(len(set(colors)))",
+    hints: [
+      "Each ax.plot() call adds a new line with a unique color",
+      "ax.lines contains all Line2D objects",
+      "line.get_color() returns the line's color string",
+    ],
+    testCases: [{ input: "", expected: "4\n4" }],
+  },
+  {
+    id: 78,
+    title: "Matplotlib: Annotations",
+    description:
+      "Plot [1,2,3,4] vs [10,20,25,30]. Add annotations 'Start' at (1,10) and 'End' at (4,30). Print the text list and count.",
+    difficulty: "hard",
+    level: 78,
+    concept:
+      "ax.annotate() adds text labels pointing to specific data points. Essential for highlighting key values.",
+    realWorldUse:
+      "Annotating peaks, anomalies, thresholds, and key events in time series and data visualizations.",
+    whyItMatters:
+      "Raw plots without context are hard to interpret. Annotations guide the viewer to the important parts.",
+    starterCode:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\nfig, ax = plt.subplots()\nax.plot([1, 2, 3, 4], [10, 20, 25, 30])\n# Add annotations and print text list and count\n",
+    solution:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\nfig, ax = plt.subplots()\nax.plot([1, 2, 3, 4], [10, 20, 25, 30])\nax.annotate('Start', xy=(1, 10))\nax.annotate('End', xy=(4, 30))\ntexts = [t.get_text() for t in ax.texts]\nprint(texts)\nprint(len(ax.texts))",
+    hints: [
+      "ax.annotate('text', xy=(x, y)) adds an annotation",
+      "ax.texts contains all text objects on the axes",
+      "t.get_text() returns the text string",
+    ],
+    testCases: [{ input: "", expected: "['Start', 'End']\n2" }],
+  },
+  {
+    id: 79,
+    title: "Matplotlib: Legend",
+    description:
+      "Plot three labeled lines: 'Linear', 'Quadratic', 'Cubic'. Add a legend and print the legend labels.",
+    difficulty: "hard",
+    level: 79,
+    concept:
+      "ax.legend() creates a legend from plot labels. It automatically matches colors to their labels.",
+    realWorldUse:
+      "Legends are essential for multi-line plots — distinguishing training/validation loss, comparing model variants.",
+    whyItMatters:
+      "Without a legend, multi-series plots are unreadable. Good legends make plots self-explanatory.",
+    starterCode:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\nfig, ax = plt.subplots()\n# Plot 3 labeled lines and print legend labels\n",
+    solution:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\nfig, ax = plt.subplots()\nax.plot([1, 2, 3], [1, 2, 3], label='Linear')\nax.plot([1, 2, 3], [1, 4, 9], label='Quadratic')\nax.plot([1, 2, 3], [1, 8, 27], label='Cubic')\nlegend = ax.legend()\nlabels = [t.get_text() for t in legend.get_texts()]\nprint(labels)",
+    hints: [
+      "Add label='name' parameter to each plot() call",
+      "ax.legend() creates the legend from these labels",
+      "legend.get_texts() returns the Text objects",
+    ],
+    testCases: [{ input: "", expected: "['Linear', 'Quadratic', 'Cubic']" }],
+  },
+  {
+    id: 80,
+    title: "Matplotlib: Figure Size & DPI",
+    description:
+      "Create a figure with figsize=(12, 8) and dpi=150. Print the size as 'WxH', the DPI as integer, and the pixel dimensions as 'WxH'.",
+    difficulty: "hard",
+    level: 80,
+    concept:
+      "Figure size is in inches, DPI (dots per inch) controls resolution. Pixel dimensions = size * DPI.",
+    realWorldUse:
+      "Controlling output quality for publications, web display, and presentations. Higher DPI = crisper images.",
+    whyItMatters:
+      "Proper figure sizing ensures your plots look professional. Wrong DPI leads to blurry or oversized images.",
+    starterCode:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\n# Create figure with figsize=(12, 8) and dpi=150\n# Print size, DPI, and pixel dimensions\n",
+    solution:
+      "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\nfig = plt.figure(figsize=(12, 8), dpi=150)\nw, h = fig.get_size_inches()\nprint(f'{w}x{h}')\nprint(int(fig.dpi))\nprint(f'{int(w * fig.dpi)}x{int(h * fig.dpi)}')",
+    hints: [
+      "plt.figure(figsize=(w, h), dpi=n) sets size and resolution",
+      "fig.get_size_inches() returns (width, height) in inches",
+      "Pixels = inches × DPI",
+    ],
+    testCases: [{ input: "", expected: "12.0x8.0\n150\n1800x1200" }],
+  },
+
+  // ==================== SCIKIT-LEARN (Levels 81-90) ====================
+  {
+    id: 81,
+    title: "Sklearn: Create a Dataset",
+    description:
+      "Use make_classification to create a dataset with 100 samples and 4 features (random_state=42). Print X shape, y shape, and the sorted unique classes.",
+    difficulty: "hard",
+    level: 81,
+    concept:
+      "Scikit-learn provides synthetic dataset generators for testing and learning. make_classification creates random classification problems.",
+    realWorldUse:
+      "Testing ML pipelines before using real data, benchmarking models, generating training data for prototypes.",
+    whyItMatters:
+      "You need data to learn ML. Synthetic datasets let you experiment without worrying about data collection.",
+    starterCode:
+      "from sklearn.datasets import make_classification\n# Create dataset with 100 samples, 4 features, random_state=42\n# Print X.shape, y.shape, sorted unique classes\n",
+    solution:
+      "from sklearn.datasets import make_classification\nX, y = make_classification(n_samples=100, n_features=4, random_state=42)\nprint(X.shape)\nprint(y.shape)\nprint(sorted(set(y.tolist())))",
+    hints: [
+      "make_classification returns (X, y) — features and labels",
+      "X.shape gives (n_samples, n_features)",
+      "set(y.tolist()) gives the unique class labels",
+    ],
+    testCases: [{ input: "", expected: "(100, 4)\n(100,)\n[0, 1]" }],
+  },
+  {
+    id: 82,
+    title: "Sklearn: Train/Test Split",
+    description:
+      "Create X with np.arange(20).reshape(10, 2) and y = [0,0,0,0,0,1,1,1,1,1]. Split with test_size=0.3 and random_state=42. Print the shapes and lengths.",
+    difficulty: "hard",
+    level: 82,
+    concept:
+      "train_test_split randomly divides data into training and testing sets. The test set evaluates model generalization.",
+    realWorldUse:
+      "Every ML project uses train/test splits. Without held-out test data, you can't measure real model performance.",
+    whyItMatters:
+      "Evaluating on training data is cheating. A proper split reveals whether your model truly learned or just memorized.",
+    starterCode:
+      "from sklearn.model_selection import train_test_split\nimport numpy as np\nX = np.arange(20).reshape(10, 2)\ny = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1])\n# Split and print shapes\n",
+    solution:
+      "from sklearn.model_selection import train_test_split\nimport numpy as np\nX = np.arange(20).reshape(10, 2)\ny = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1])\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)\nprint(X_train.shape)\nprint(X_test.shape)\nprint(len(y_train), len(y_test))",
+    hints: [
+      "train_test_split returns X_train, X_test, y_train, y_test",
+      "test_size=0.3 means 30% for testing, 70% for training",
+      "random_state ensures reproducible splits",
+    ],
+    testCases: [{ input: "", expected: "(7, 2)\n(3, 2)\n7 3" }],
+  },
+  {
+    id: 83,
+    title: "Sklearn: Linear Regression",
+    description:
+      "Fit a LinearRegression on X=[[1],[2],[3],[4],[5]], y=[3,5,7,9,11]. Print the coefficient, intercept, and prediction for X=[[6]] — all rounded to 1 decimal.",
+    difficulty: "hard",
+    level: 83,
+    concept:
+      "LinearRegression fits y = w*X + b by minimizing squared errors. coef_ gives w, intercept_ gives b.",
+    realWorldUse:
+      "Predicting continuous values — housing prices, sales forecasts, temperature predictions, stock trends.",
+    whyItMatters:
+      "Linear regression is the foundation of all regression models. Every data scientist must understand it.",
+    starterCode:
+      "from sklearn.linear_model import LinearRegression\nimport numpy as np\nX = np.array([[1], [2], [3], [4], [5]])\ny = np.array([3, 5, 7, 9, 11])\n# Fit model, print coef, intercept, prediction for [[6]]\n",
+    solution:
+      "from sklearn.linear_model import LinearRegression\nimport numpy as np\nX = np.array([[1], [2], [3], [4], [5]])\ny = np.array([3, 5, 7, 9, 11])\nmodel = LinearRegression()\nmodel.fit(X, y)\nprint(round(model.coef_[0], 1))\nprint(round(model.intercept_, 1))\nprint(round(model.predict(np.array([[6]]))[0], 1))",
+    hints: [
+      "model.fit(X, y) trains the linear regression",
+      "model.coef_ gives the slope, model.intercept_ gives the bias",
+      "model.predict(X_new) makes predictions on new data",
+    ],
+    testCases: [{ input: "", expected: "2.0\n1.0\n13.0" }],
+  },
+  {
+    id: 84,
+    title: "Sklearn: Accuracy Score",
+    description:
+      "Given actual = [1,0,1,1,0,1,0,0,1,0] and predicted = [1,0,0,1,0,1,1,0,1,0], compute and print the accuracy using sklearn.",
+    difficulty: "hard",
+    level: 84,
+    concept:
+      "accuracy_score computes the fraction of correct predictions. It's the simplest classification metric.",
+    realWorldUse:
+      "Quick model evaluation — the first metric you check for any classifier to see if it's better than random guessing.",
+    whyItMatters:
+      "Sklearn's metrics are standardized and tested. Using them ensures consistent evaluation across projects.",
+    starterCode:
+      "from sklearn.metrics import accuracy_score\nactual = [1, 0, 1, 1, 0, 1, 0, 0, 1, 0]\npredicted = [1, 0, 0, 1, 0, 1, 1, 0, 1, 0]\n# Print accuracy\n",
+    solution:
+      "from sklearn.metrics import accuracy_score\nactual = [1, 0, 1, 1, 0, 1, 0, 0, 1, 0]\npredicted = [1, 0, 0, 1, 0, 1, 1, 0, 1, 0]\nprint(accuracy_score(actual, predicted))",
+    hints: [
+      "accuracy_score(y_true, y_pred) computes accuracy",
+      "Count matching pairs: 8 out of 10 match",
+      "Accuracy = 8/10 = 0.8",
+    ],
+    testCases: [{ input: "", expected: "0.8" }],
+  },
+  {
+    id: 85,
+    title: "Sklearn: StandardScaler",
+    description:
+      "Scale data = [[10],[20],[30],[40],[50]] using StandardScaler. Print the mean, the mean of scaled data (rounded, use abs), and the std of scaled data (rounded to 1 decimal).",
+    difficulty: "hard",
+    level: 85,
+    concept:
+      "StandardScaler transforms features to zero mean and unit variance: z = (x - mean) / std. Essential preprocessing.",
+    realWorldUse:
+      "Many ML algorithms (SVM, KNN, neural networks) require scaled features. Unscaled data leads to biased models.",
+    whyItMatters:
+      "Feature scaling is a critical preprocessing step. Without it, features with large values dominate the model.",
+    starterCode:
+      "from sklearn.preprocessing import StandardScaler\nimport numpy as np\ndata = np.array([[10], [20], [30], [40], [50]])\n# Scale data and print mean, scaled mean, scaled std\n",
+    solution:
+      "from sklearn.preprocessing import StandardScaler\nimport numpy as np\ndata = np.array([[10], [20], [30], [40], [50]])\nscaler = StandardScaler()\nscaled = scaler.fit_transform(data)\nprint(round(scaler.mean_[0], 1))\nprint(round(abs(float(scaled.mean())), 1))\nprint(round(float(scaled.std()), 1))",
+    hints: [
+      "scaler.fit_transform(data) fits and transforms in one step",
+      "scaler.mean_ gives the computed mean of each feature",
+      "Scaled data should have mean ≈ 0 and std ≈ 1",
+    ],
+    testCases: [{ input: "", expected: "30.0\n0.0\n1.0" }],
+  },
+  {
+    id: 86,
+    title: "Sklearn: Decision Tree",
+    description:
+      "Train a DecisionTreeClassifier (random_state=0) on X=[[0],[1],[2],[10],[11],[12]], y=[0,0,0,1,1,1]. Predict [5] and [1], and print the training accuracy.",
+    difficulty: "hard",
+    level: 86,
+    concept:
+      "Decision trees split data by asking yes/no questions about features. They're intuitive and require no feature scaling.",
+    realWorldUse:
+      "Decision trees power random forests and gradient boosting — the most successful ML algorithms for tabular data.",
+    whyItMatters:
+      "Trees are interpretable and powerful. Understanding them is key to mastering ensemble methods like XGBoost.",
+    starterCode:
+      "from sklearn.tree import DecisionTreeClassifier\nimport numpy as np\nX = np.array([[0], [1], [2], [10], [11], [12]])\ny = np.array([0, 0, 0, 1, 1, 1])\n# Train, predict [5] and [1], print training accuracy\n",
+    solution:
+      "from sklearn.tree import DecisionTreeClassifier\nimport numpy as np\nX = np.array([[0], [1], [2], [10], [11], [12]])\ny = np.array([0, 0, 0, 1, 1, 1])\nclf = DecisionTreeClassifier(random_state=0)\nclf.fit(X, y)\nprint(clf.predict(np.array([[5]]))[0])\nprint(clf.predict(np.array([[1]]))[0])\nprint(clf.score(X, y))",
+    hints: [
+      "clf.fit(X, y) trains the decision tree",
+      "clf.predict(X_new) classifies new samples",
+      "clf.score(X, y) gives training accuracy (should be 1.0)",
+    ],
+    testCases: [{ input: "", expected: "0\n0\n1.0" }],
+  },
+  {
+    id: 87,
+    title: "Sklearn: K-Means Clustering",
+    description:
+      "Cluster X=[[1,1],[1,2],[2,1],[10,10],[10,11],[11,10]] into 2 groups (random_state=0, n_init=10). Print n_clusters, unique label count, and sorted cluster centers rounded to 1 decimal.",
+    difficulty: "hard",
+    level: 87,
+    concept:
+      "K-Means groups data into k clusters by iteratively assigning points to the nearest center and updating centers.",
+    realWorldUse:
+      "Customer segmentation, image compression, anomaly detection, grouping similar documents or products.",
+    whyItMatters:
+      "Clustering is the most common unsupervised learning task. K-Means is simple, fast, and widely used.",
+    starterCode:
+      "from sklearn.cluster import KMeans\nimport numpy as np\nX = np.array([[1, 1], [1, 2], [2, 1], [10, 10], [10, 11], [11, 10]])\n# Cluster into 2 groups and print results\n",
+    solution:
+      "from sklearn.cluster import KMeans\nimport numpy as np\nX = np.array([[1, 1], [1, 2], [2, 1], [10, 10], [10, 11], [11, 10]])\nkmeans = KMeans(n_clusters=2, random_state=0, n_init=10)\nkmeans.fit(X)\nprint(kmeans.n_clusters)\nprint(len(set(kmeans.labels_.tolist())))\ncenters = sorted(kmeans.cluster_centers_.tolist())\nprint([round(x, 1) for x in centers[0]])\nprint([round(x, 1) for x in centers[1]])",
+    hints: [
+      "KMeans(n_clusters=2) creates a 2-cluster model",
+      "kmeans.labels_ gives the cluster assignment for each point",
+      "kmeans.cluster_centers_ gives the center coordinates",
+    ],
+    testCases: [{ input: "", expected: "2\n2\n[1.3, 1.3]\n[10.3, 10.3]" }],
+  },
+  {
+    id: 88,
+    title: "Sklearn: Confusion Matrix",
+    description:
+      "Given actual=[1,0,1,1,0,0,1,0] and predicted=[1,0,0,1,1,0,1,0], compute the confusion matrix using sklearn and print it as a list.",
+    difficulty: "hard",
+    level: 88,
+    concept:
+      "confusion_matrix returns [[TN, FP], [FN, TP]] showing all four types of classification outcomes.",
+    realWorldUse:
+      "Detailed error analysis — understanding whether errors are false positives or false negatives helps guide model improvement.",
+    whyItMatters:
+      "Sklearn's confusion_matrix is standardized and handles edge cases. It's the foundation for precision, recall, and F1.",
+    starterCode:
+      "from sklearn.metrics import confusion_matrix\nactual = [1, 0, 1, 1, 0, 0, 1, 0]\npredicted = [1, 0, 0, 1, 1, 0, 1, 0]\n# Compute and print confusion matrix as list\n",
+    solution:
+      "from sklearn.metrics import confusion_matrix\nactual = [1, 0, 1, 1, 0, 0, 1, 0]\npredicted = [1, 0, 0, 1, 1, 0, 1, 0]\ncm = confusion_matrix(actual, predicted)\nprint(cm.tolist())",
+    hints: [
+      "confusion_matrix(y_true, y_pred) returns the matrix",
+      "Format: [[TN, FP], [FN, TP]]",
+      ".tolist() converts numpy array to Python list",
+    ],
+    testCases: [{ input: "", expected: "[[3, 1], [1, 3]]" }],
+  },
+  {
+    id: 89,
+    title: "Sklearn: Pipeline",
+    description:
+      "Create a Pipeline with StandardScaler and LinearRegression. Fit on X=[[1],[2],[3],[4],[5]], y=[3,5,7,9,11]. Print step count, scaler class name, and prediction for [[6]] rounded to 1 decimal.",
+    difficulty: "hard",
+    level: 89,
+    concept:
+      "Pipelines chain preprocessing and model steps. They ensure consistent transformations and prevent data leakage.",
+    realWorldUse:
+      "Production ML always uses pipelines — they bundle preprocessing with the model for clean, reproducible predictions.",
+    whyItMatters:
+      "Without pipelines, you risk applying different transformations to train and test data, causing subtle bugs.",
+    starterCode:
+      "from sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression\nimport numpy as np\n# Create pipeline, fit, and print results\n",
+    solution:
+      "from sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression\nimport numpy as np\npipe = Pipeline([('scaler', StandardScaler()), ('model', LinearRegression())])\nX = np.array([[1], [2], [3], [4], [5]])\ny = np.array([3, 5, 7, 9, 11])\npipe.fit(X, y)\nprint(len(pipe.steps))\nprint(pipe.named_steps['scaler'].__class__.__name__)\nprint(round(pipe.predict(np.array([[6]]))[0], 1))",
+    hints: [
+      "Pipeline takes a list of (name, estimator) tuples",
+      "pipe.fit(X, y) runs all steps in sequence",
+      "pipe.predict() applies scaler then model automatically",
+    ],
+    testCases: [{ input: "", expected: "2\nStandardScaler\n13.0" }],
+  },
+  {
+    id: 90,
+    title: "Sklearn: Precision, Recall & F1",
+    description:
+      "Given actual=[1,1,0,1,0,0,1,0,1,1] and predicted=[1,0,0,1,0,1,1,0,0,1], compute and print precision, recall, and F1 score each rounded to 2 decimals.",
+    difficulty: "hard",
+    level: 90,
+    concept:
+      "Precision = TP/(TP+FP), Recall = TP/(TP+FN), F1 = harmonic mean of precision and recall. These go beyond simple accuracy.",
+    realWorldUse:
+      "F1 score balances precision and recall — critical for imbalanced datasets like fraud detection or disease diagnosis.",
+    whyItMatters:
+      "Accuracy is misleading with imbalanced classes. Precision, recall, and F1 give a complete picture of classifier quality.",
+    starterCode:
+      "from sklearn.metrics import precision_score, recall_score, f1_score\nactual = [1, 1, 0, 1, 0, 0, 1, 0, 1, 1]\npredicted = [1, 0, 0, 1, 0, 1, 1, 0, 0, 1]\n# Print precision, recall, f1 (2 decimal places)\n",
+    solution:
+      "from sklearn.metrics import precision_score, recall_score, f1_score\nactual = [1, 1, 0, 1, 0, 0, 1, 0, 1, 1]\npredicted = [1, 0, 0, 1, 0, 1, 1, 0, 0, 1]\nprint(round(precision_score(actual, predicted), 2))\nprint(round(recall_score(actual, predicted), 2))\nprint(round(f1_score(actual, predicted), 2))",
+    hints: [
+      "precision_score, recall_score, f1_score all take (y_true, y_pred)",
+      "TP=4, FP=1, FN=2 → precision=4/5=0.8, recall=4/6≈0.67",
+      "F1 = 2 * precision * recall / (precision + recall)",
+    ],
+    testCases: [{ input: "", expected: "0.8\n0.67\n0.73" }],
+  },
 ];

@@ -26,6 +26,13 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Libraries that require Pyodide (not available on Piston/Judge0)
+  const PYODIDE_LIBS = ["import numpy", "import pandas", "import matplotlib", "import sklearn", "from sklearn", "from numpy", "from pandas", "from matplotlib"];
+  const needsPyodide = PYODIDE_LIBS.some((lib) => lower.includes(lib.toLowerCase()));
+  if (needsPyodide) {
+    return NextResponse.json({ output: "", usePyodide: true });
+  }
+
   // Try Piston API (free, no key needed)
   try {
     const res = await fetch("https://emkc.org/api/v2/piston/execute", {

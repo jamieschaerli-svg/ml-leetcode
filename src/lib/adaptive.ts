@@ -12,7 +12,7 @@ export interface ProblemRecord {
 }
 
 export interface UserSkill {
-  level: number;       // estimated skill level 1-30
+  level: number;       // estimated skill level 1-90
   confidence: number;  // 0-1, how sure we are about the level
   records: Record<number, ProblemRecord>;
 }
@@ -91,7 +91,7 @@ export function recordFeedback(
   // Feedback adjusts skill level
   if (feedback === "too_easy") {
     // User found it easy — push level up more aggressively
-    skill.level = Math.min(30, skill.level + 2);
+    skill.level = Math.min(90, skill.level + 2);
     skill.confidence = Math.min(1, skill.confidence + 0.05);
   } else if (feedback === "too_hard") {
     // User struggled — pull level down
@@ -124,7 +124,7 @@ function recalculateLevel(
   // Always move at least a little toward the problem level
   const nudge = (problemLevel - skill.level) * 0.3;
 
-  return Math.max(1, Math.min(30, blended + nudge));
+  return Math.max(1, Math.min(90, blended + nudge));
 }
 
 // --- Recommendations ---

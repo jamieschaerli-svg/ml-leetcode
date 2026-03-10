@@ -65,6 +65,7 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
       }
 
       const py = pyodideRef.current;
+      await py.loadPackagesFromImports(codeToRun);
       await py.runPythonAsync("import sys, io; sys.stdout = io.StringIO()");
       await py.runPythonAsync(codeToRun);
       const stdout = await py.runPythonAsync("sys.stdout.getvalue()");

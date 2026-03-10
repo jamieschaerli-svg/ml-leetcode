@@ -136,7 +136,7 @@ export default function Home() {
               <div
                 className="h-full rounded-full transition-all duration-500"
                 style={{
-                  width: `${(skill.level / 30) * 100}%`,
+                  width: `${(skill.level / 90) * 100}%`,
                   background: "linear-gradient(90deg, var(--accent), #8b83ff)",
                 }}
               />

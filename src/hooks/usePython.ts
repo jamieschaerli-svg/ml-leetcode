@@ -74,6 +74,7 @@ export function usePython() {
         sys.stdout = io.StringIO()
       `);
       
+      await pyodide.loadPackagesFromImports(code);
       await pyodide.runPythonAsync(code);
       
       // Get stdout
