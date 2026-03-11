@@ -5,14 +5,23 @@ import Link from "next/link";
 import { problems } from "@/data/problems";
 import Logo from "@/components/Logo";
 import { getRecommendations, getSkillSummary, type Recommendation } from "@/lib/adaptive";
+import { type ProblemCategory, CATEGORIES, getProblemCategory } from "@/lib/types";
 
 export default function Home() {
-  const easy = problems.filter((p) => p.difficulty === "easy");
-  const medium = problems.filter((p) => p.difficulty === "medium");
-  const hard = problems.filter((p) => p.difficulty === "hard");
-
+  const [activeCategory, setActiveCategory] = useState<ProblemCategory>("all");
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [skill, setSkill] = useState<{ level: number; solved: number; total: number; streak: number } | null>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("codepro_category");
+    if (saved && CATEGORIES.some((c) => c.id === saved)) {
+      setActiveCategory(saved as ProblemCategory);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("codepro_category", activeCategory);
+  }, [activeCategory]);
 
   useEffect(() => {
     const summary = getSkillSummary();
@@ -21,6 +30,16 @@ export default function Home() {
       setRecommendations(getRecommendations(3));
     }
   }, []);
+
+  const filtered = activeCategory === "all"
+    ? problems
+    : problems.filter((p) => getProblemCategory(p) === activeCategory);
+
+  const easy = filtered.filter((p) => p.difficulty === "easy");
+  const medium = filtered.filter((p) => p.difficulty === "medium");
+  const hard = filtered.filter((p) => p.difficulty === "hard");
+
+  const activeMeta = CATEGORIES.find((c) => c.id === activeCategory)!;
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -186,15 +205,77 @@ export default function Home() {
 
       {/* Problems List */}
       <section id="problems" className="relative mx-auto max-w-4xl px-6 pb-32 pt-16">
-        <div className="mb-16 text-center">
+        <div className="mb-10 text-center">
           <h2 className="text-3xl font-bold tracking-tight mb-4 text-white">Problem Library</h2>
-          <p className="text-zinc-400">Master concepts progressively from easy to hard.</p>
+          <p className="text-zinc-400">Choose a focus track or learn everything mixed together.</p>
+        </div>
+
+        {/* Category Filter */}
+        <div className="mb-10">
+          <div className="flex flex-wrap justify-center gap-2 mb-6">
+            {CATEGORIES.map((cat) => {
+              const isActive = activeCategory === cat.id;
+              const count = cat.id === "all"
+                ? problems.length
+                : problems.filter((p) => getProblemCategory(p) === cat.id).length;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className="relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 border"
+                  style={{
+                    color: isActive ? "#fff" : cat.color,
+                    backgroundColor: isActive ? `${cat.color}20` : "transparent",
+                    borderColor: isActive ? `${cat.color}60` : "rgba(255,255,255,0.08)",
+                    boxShadow: isActive ? `0 0 20px ${cat.color}15` : "none",
+                  }}
+                >
+                  <span className="flex items-center gap-2">
+                    {cat.label}
+                    <span
+                      className="text-xs px-1.5 py-0.5 rounded-md"
+                      style={{
+                        backgroundColor: isActive ? `${cat.color}30` : "rgba(255,255,255,0.05)",
+                        color: isActive ? "#fff" : "rgb(161,161,170)",
+                      }}
+                    >
+                      {count}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Active category description */}
+          {activeCategory !== "all" && (
+            <div
+              className="text-center py-3 px-4 rounded-xl border mx-auto max-w-md"
+              style={{
+                borderColor: `${activeMeta.color}30`,
+                backgroundColor: `${activeMeta.color}08`,
+              }}
+            >
+              <p className="text-sm" style={{ color: activeMeta.color }}>
+                {activeMeta.label} Master Class
+              </p>
+              <p className="text-xs text-zinc-500 mt-0.5">{activeMeta.description}</p>
+            </div>
+          )}
         </div>
 
         <div className="relative z-10">
-          <ProblemSection title="Easy" color="#10b981" problems={easy} />
-          <ProblemSection title="Medium" color="#f59e0b" problems={medium} />
-          <ProblemSection title="Hard" color="#ef4444" problems={hard} />
+          {filtered.length === 0 ? (
+            <div className="text-center py-16 text-zinc-500">
+              No problems found for this category.
+            </div>
+          ) : (
+            <>
+              <ProblemSection title="Easy" color="#10b981" problems={easy} />
+              <ProblemSection title="Medium" color="#f59e0b" problems={medium} />
+              <ProblemSection title="Hard" color="#ef4444" problems={hard} />
+            </>
+          )}
         </div>
       </section>
 

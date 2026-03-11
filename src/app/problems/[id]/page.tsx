@@ -1,12 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, use } from "react";
-
-declare global {
-  interface Window {
-    loadPyodide: (options: { indexURL: string }) => Promise<any>;
-  }
-}
 import Link from "next/link";
 import { problems } from "@/data/problems";
 import Header from "@/components/Header";
@@ -14,6 +8,12 @@ import CodeEditor from "@/components/CodeEditor";
 import HintSystem from "@/components/HintSystem";
 import FeedbackButtons from "@/components/FeedbackButtons";
 import { recordAttempt, getRecommendations, getSkillSummary } from "@/lib/adaptive";
+
+declare global {
+  interface Window {
+    loadPyodide: (options: { indexURL: string }) => Promise<any>;
+  }
+}
 
 export default function ProblemPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -299,15 +299,7 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
                 {isCorrect === true ? "Correct!" : isCorrect === false ? "Not quite — try again!" : "Output"}
               </div>
 
-              {/* Show friendly error for Python exceptions */}
-              {isCorrect === false && output && (output.includes("Traceback") || output.includes("Error")) && !output.includes("\n") ? (
-                <div className="space-y-3">
-                  <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3">
-                    <div className="text-xs font-semibold text-red-400 mb-1">Error</div>
-                    <pre className="whitespace-pre-wrap text-red-300/80">{output}</pre>
-                  </div>
-                </div>
-              ) : isCorrect === false && output && (output.includes("Traceback") || output.includes("SyntaxError") || output.includes("NameError") || output.includes("TypeError") || output.includes("IndentationError") || output.includes("AttributeError") || output.includes("ImportError") || output.includes("ValueError") || output.includes("IndexError") || output.includes("KeyError") || output.includes("ZeroDivisionError")) ? (
+              {isCorrect === false && output && /Error|Traceback/.test(output) ? (
                 <div className="space-y-3">
                   <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3">
                     <div className="text-xs font-semibold text-red-400 mb-1">Python Error</div>
@@ -319,10 +311,12 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
                       })()
                     }</pre>
                   </div>
-                  <details className="text-xs text-zinc-500">
-                    <summary className="cursor-pointer hover:text-zinc-300 transition-colors">Show full traceback</summary>
-                    <pre className="mt-2 whitespace-pre-wrap text-zinc-600">{output}</pre>
-                  </details>
+                  {output.includes("\n") && (
+                    <details className="text-xs text-zinc-500">
+                      <summary className="cursor-pointer hover:text-zinc-300 transition-colors">Show full traceback</summary>
+                      <pre className="mt-2 whitespace-pre-wrap text-zinc-600">{output}</pre>
+                    </details>
+                  )}
                 </div>
               ) : isCorrect === false ? (
                 <div className="space-y-3">

@@ -206,7 +206,7 @@ export function getSkillSummary(): {
       const days = new Set<string>();
       for (const ts of timestamps) {
         const d = new Date(ts);
-        days.add(`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`);
+        days.add(d.toISOString().split("T")[0]);
       }
       const sortedDays = [...days].sort().reverse();
       for (let i = 1; i < sortedDays.length; i++) {
