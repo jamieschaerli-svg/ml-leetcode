@@ -12,8 +12,10 @@ export default function CodeEditor({ code, onChange }: CodeEditorProps) {
 
   return (
     <div
-      className={`overflow-hidden rounded-xl border border-white/10 bg-black/50 backdrop-blur-xl transition-all duration-300 ${
-        expanded ? "fixed inset-4 z-50 flex flex-col" : ""
+      className={`overflow-hidden rounded-xl border transition-all duration-300 ${
+        expanded
+          ? "fixed inset-4 z-50 flex flex-col bg-[#0a0a0f] border-white/20"
+          : "bg-black/50 border-white/10"
       }`}
     >
       {expanded && (
