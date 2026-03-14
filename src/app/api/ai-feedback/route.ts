@@ -22,6 +22,8 @@ export async function POST(req: NextRequest) {
   const prompt =
     type === "feedback"
       ? buildFeedbackPrompt(code, problem, output, isCorrect)
+      : type === "validate"
+      ? buildValidatePrompt(code, problem)
       : buildHintPrompt(code, problem);
 
   try {
@@ -53,6 +55,11 @@ export async function POST(req: NextRequest) {
 
     const data = await res.json();
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+    if (type === "validate") {
+      const legitimate = !text.toLowerCase().startsWith("no");
+      return NextResponse.json({ result: text, legitimate });
+    }
 
     return NextResponse.json({ result: text });
   } catch {
@@ -101,4 +108,23 @@ ${code.slice(0, 3000)}
 \`\`\`
 
 Give ONE short contextual hint (1-2 sentences) based on what they have written. Guide them toward the solution without giving it away. If their code is empty, give a gentle starting point.`;
+}
+
+function buildValidatePrompt(
+  code: string,
+  problem: { title: string; description: string; difficulty: string }
+): string {
+  return `You are a code validator. A student submitted code for this problem:
+
+Title: ${problem.title}
+Description: ${problem.description}
+
+Their code:
+\`\`\`python
+${code.slice(0, 3000)}
+\`\`\`
+
+Does this code ACTUALLY solve the problem as described, or did the student just hardcode/fake the output (e.g. just print the expected answer without doing any real computation or logic)?
+
+Answer with EXACTLY "YES" if the code legitimately solves the problem, or "NO" followed by a brief explanation if it's hardcoded or doesn't actually solve the problem. Be strict — if the problem asks to create variables and do operations, just printing the final number is NOT legitimate.`;
 }

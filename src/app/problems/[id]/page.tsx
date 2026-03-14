@@ -27,7 +27,26 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
   const [running, setRunning] = useState(false);
   const [nextRec, setNextRec] = useState<{ id: number; title: string } | null>(null);
   const [skillLevel, setSkillLevel] = useState<number | null>(null);
+  const [aiFeedbackKey, setAiFeedbackKey] = useState(0);
   const pyodideRef = useRef<any>(null);
+
+  async function validateWithAI(userCode: string): Promise<boolean> {
+    try {
+      const res = await fetch("/api/ai-feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "validate",
+          code: userCode,
+          problem: { title: problem!.title, description: problem!.description, difficulty: problem!.difficulty },
+        }),
+      });
+      const data = await res.json();
+      return data.legitimate !== false;
+    } catch {
+      return true; // if AI is down, don't block the user
+    }
+  }
 
   useEffect(() => {
     const summary = getSkillSummary();
@@ -76,6 +95,36 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
     }
   }
 
+  async function handleResult(userOutput: string, userCode: string) {
+    const expected = problem!.testCases[0].expected.trim();
+    const actual = (userOutput || "").trim();
+    let correct = actual === expected;
+
+    setOutput(userOutput);
+
+    if (correct) {
+      // AI validation: check if the code actually solves the problem
+      const legitimate = await validateWithAI(userCode);
+      if (!legitimate) {
+        correct = false;
+        setIsCorrect(false);
+        setOutput("Your output matches, but your code doesn't actually solve the problem. Try using the concepts described — don't just hardcode the answer!");
+        recordAttempt(problem!.id, false);
+        setAiFeedbackKey((k) => k + 1);
+        return;
+      }
+    }
+
+    setIsCorrect(correct);
+    const updatedSkill = recordAttempt(problem!.id, correct);
+    setSkillLevel(Math.round(updatedSkill.level));
+    if (correct) {
+      const recs = getRecommendations(1);
+      if (recs.length > 0) setNextRec({ id: recs[0].problem.id, title: recs[0].problem.title });
+    }
+    setAiFeedbackKey((k) => k + 1);
+  }
+
   async function runCode() {
     setRunning(true);
     setOutput("");
@@ -97,24 +146,14 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
           setOutput(pyResult.error);
           setIsCorrect(false);
           recordAttempt(problem!.id, false);
+          setAiFeedbackKey((k) => k + 1);
         } else {
-          const expected = problem!.testCases[0].expected.trim();
-          const actual = (pyResult.output || "").trim();
-          const correct = actual === expected;
-          setOutput(pyResult.output);
-          setIsCorrect(correct);
-          const updatedSkill = recordAttempt(problem!.id, correct);
-          setSkillLevel(Math.round(updatedSkill.level));
-          if (correct) {
-            const recs = getRecommendations(1);
-            if (recs.length > 0) setNextRec({ id: recs[0].problem.id, title: recs[0].problem.title });
-          }
+          await handleResult(pyResult.output, code);
         }
         return;
       }
 
       if (data.error) {
-        // Clean up Forbidden messages
         if (data.error.startsWith("Forbidden:")) {
           setOutput(data.error.replace("Forbidden: ", "") + "\nThis import is restricted for security. Try a different approach.");
         } else {
@@ -122,20 +161,11 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
         }
         setIsCorrect(false);
         recordAttempt(problem!.id, false);
+        setAiFeedbackKey((k) => k + 1);
         return;
       }
 
-      setOutput(data.output);
-      const expected = problem!.testCases[0].expected.trim();
-      const actual = (data.output || "").trim();
-      const correct = actual === expected;
-      setIsCorrect(correct);
-      const updatedSkill = recordAttempt(problem!.id, correct);
-      setSkillLevel(Math.round(updatedSkill.level));
-      if (correct) {
-        const recs = getRecommendations(1);
-        if (recs.length > 0) setNextRec({ id: recs[0].problem.id, title: recs[0].problem.title });
-      }
+      await handleResult(data.output, code);
     } catch {
       // Server unreachable — try Pyodide directly
       try {
@@ -143,11 +173,9 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
         if (pyResult.error) {
           setOutput(pyResult.error);
           setIsCorrect(false);
+          setAiFeedbackKey((k) => k + 1);
         } else {
-          const expected = problem!.testCases[0].expected.trim();
-          const actual = (pyResult.output || "").trim();
-          setOutput(pyResult.output);
-          setIsCorrect(actual === expected);
+          await handleResult(pyResult.output, code);
         }
       } catch {
         setOutput("Could not run code. Please check your internet connection.");
@@ -341,8 +369,9 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
           )}
 
           {/* AI Feedback */}
-          {(output || isCorrect !== null) && (
+          {(output || isCorrect !== null) && aiFeedbackKey > 0 && (
             <AIFeedback
+              key={aiFeedbackKey}
               code={code}
               problem={{ title: problem.title, description: problem.description, difficulty: problem.difficulty }}
               output={output}
