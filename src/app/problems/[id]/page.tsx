@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import CodeEditor from "@/components/CodeEditor";
 import HintSystem from "@/components/HintSystem";
 import FeedbackButtons from "@/components/FeedbackButtons";
+import AIFeedback from "@/components/AIFeedback";
 import { recordAttempt, getRecommendations, getSkillSummary } from "@/lib/adaptive";
 
 declare global {
@@ -259,7 +260,11 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
               </div>
 
               {/* Hints */}
-              <HintSystem hints={problem.hints} />
+              <HintSystem
+                hints={problem.hints}
+                code={code}
+                problem={{ title: problem.title, description: problem.description, difficulty: problem.difficulty }}
+              />
             </>
           )}
         </div>
@@ -333,6 +338,16 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
                 <pre className="whitespace-pre-wrap">{output}</pre>
               )}
             </div>
+          )}
+
+          {/* AI Feedback */}
+          {(output || isCorrect !== null) && (
+            <AIFeedback
+              code={code}
+              problem={{ title: problem.title, description: problem.description, difficulty: problem.difficulty }}
+              output={output}
+              isCorrect={isCorrect === true}
+            />
           )}
 
           {/* Solution */}
