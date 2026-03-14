@@ -10,7 +10,7 @@ interface HintSystemProps {
 
 export default function HintSystem({ hints, code, problem }: HintSystemProps) {
   const [revealedCount, setRevealedCount] = useState(0);
-  const [aiHint, setAiHint] = useState<string | null>(null);
+  const [aiHints, setAiHints] = useState<string[]>([]);
   const [aiLoading, setAiLoading] = useState(false);
 
   async function getAIHint() {
@@ -26,7 +26,7 @@ export default function HintSystem({ hints, code, problem }: HintSystemProps) {
 
       const data = await res.json();
       if (data.result) {
-        setAiHint(data.result);
+        setAiHints((prev) => [...prev, data.result]);
       }
     } catch {
       // silently fail
@@ -66,20 +66,21 @@ export default function HintSystem({ hints, code, problem }: HintSystemProps) {
         ))}
 
         {problem && (
-          aiHint ? (
-            <div className="rounded-lg border border-purple-500/30 bg-purple-500/5 p-3 text-sm">
-              <span className="font-semibold text-purple-400">AI Hint: </span>
-              <span className="text-zinc-300">{aiHint}</span>
-            </div>
-          ) : (
+          <>
+            {aiHints.map((hint, i) => (
+              <div key={i} className="rounded-lg border border-purple-500/30 bg-purple-500/5 p-3 text-sm">
+                <span className="font-semibold text-purple-400">AI Hint {i + 1}: </span>
+                <span className="text-zinc-300">{hint}</span>
+              </div>
+            ))}
             <button
               onClick={getAIHint}
               disabled={aiLoading}
               className="w-full rounded-lg border border-dashed border-purple-500/20 p-3 text-sm text-purple-400/60 transition-colors hover:border-purple-500/40 hover:text-purple-300 disabled:opacity-50"
             >
-              {aiLoading ? "Thinking..." : "Get AI Hint"}
+              {aiLoading ? "Thinking..." : aiHints.length > 0 ? "Get Another AI Hint" : "Get AI Hint"}
             </button>
-          )
+          </>
         )}
       </div>
     </div>
