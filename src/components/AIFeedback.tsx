@@ -9,11 +9,16 @@ interface AIFeedbackProps {
   isCorrect: boolean;
 }
 
-export default function AIFeedback({ code, problem, output, isCorrect }: AIFeedbackProps) {
+export default function AIFeedback({ code, problem, output, isCorrect, starterCode }: AIFeedbackProps & { starterCode?: string }) {
   const [feedback, setFeedback] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Don't fetch if the user hasn't written anything beyond the starter code
+  const userWrote = code.trim() !== (starterCode || "").trim();
+
   useEffect(() => {
+    if (!userWrote) return;
+
     let cancelled = false;
     setFeedback(null);
     setLoading(true);

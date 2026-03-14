@@ -103,8 +103,9 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
     setOutput(userOutput);
 
     if (correct) {
-      // AI validation: check if the code actually solves the problem
-      const legitimate = await validateWithAI(userCode);
+      // AI validation: check if the code actually solves the problem (skip if starter code unchanged)
+      const userWrote = userCode.trim() !== (problem!.starterCode || "").trim();
+      const legitimate = userWrote ? await validateWithAI(userCode) : false;
       if (!legitimate) {
         correct = false;
         setIsCorrect(false);
@@ -376,6 +377,7 @@ export default function ProblemPage({ params }: { params: Promise<{ id: string }
               problem={{ title: problem.title, description: problem.description, difficulty: problem.difficulty }}
               output={output}
               isCorrect={isCorrect === true}
+              starterCode={problem.starterCode}
             />
           )}
 
