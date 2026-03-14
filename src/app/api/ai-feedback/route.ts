@@ -3,7 +3,29 @@ import { NextRequest, NextResponse } from "next/server";
 const GEMINI_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
+// Simple in-memory rate limiter: max 20 requests per minute per IP
+const rateLimitMap = new Map<string, number[]>();
+const RATE_LIMIT = 20;
+const RATE_WINDOW = 60_000;
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const timestamps = (rateLimitMap.get(ip) || []).filter((t) => now - t < RATE_WINDOW);
+  if (timestamps.length >= RATE_LIMIT) return true;
+  timestamps.push(now);
+  rateLimitMap.set(ip, timestamps);
+  return false;
+}
+
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
+  if (isRateLimited(ip)) {
+    return NextResponse.json(
+      { error: "Too many requests, slow down" },
+      { status: 429 }
+    );
+  }
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return NextResponse.json(

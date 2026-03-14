@@ -3,7 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 const FORBIDDEN = [
   "import os", "import subprocess", "import sys", "open(",
   "__import__", "exec(", "eval(", "import shutil", "import socket",
-  "import http", "import urllib",
+  "import http", "import urllib", "globals(", "locals(", "compile(",
+  "__builtins__", "breakpoint(", "import ctypes", "import signal",
+  "import threading", "import multiprocessing",
 ];
 
 export async function POST(req: NextRequest) {
